@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -50,7 +50,7 @@ export default function ListContainer(props){
 	
 	const location = () => {
 		console.log(window.location.href);
-		if(window.location.href == "http://localhost:3000/listContainer"){
+		if(window.location.href === "http://localhost:3000/listContainers"){
 		  	document.getElementById("dashboard").style.display = "none";
 		}
 	}
@@ -65,8 +65,6 @@ export default function ListContainer(props){
 		setOpen(true);
 	}
 
-	
-	//{this.location()}
 	return (
 		<>
 		<div id="containers">
@@ -75,9 +73,8 @@ export default function ListContainer(props){
 					<Link to="/dashboard"
 						onClick = {() => {document.getElementById("containers").style.display = "none";
 											document.getElementById("dashboard").style.display = "initial";
-											console.log(props.count);
 									}}
-					> Back </Link>
+					><Button size="large"> Back </Button></Link>
 				</nav>
 				<br />
 				<table className="table table-dark">
