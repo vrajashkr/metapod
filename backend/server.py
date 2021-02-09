@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful import Api, Resource
 import docker
 import inspect
@@ -22,7 +22,7 @@ class Containers(Resource):
                 'Ports': c.ports,
                 'Name': c.name
             } for c in cont_list]
-        return cont_list, 200
+        return jsonify({'containers' : cont_list})
 
 class Container(Resource):
     def get(self,id):
@@ -51,7 +51,7 @@ class Images(Resource):
                 'Created': i.attrs['Created'],
                 'Size': round(i.attrs['Size'] / 1000000, 1)
             } for i in img_list]
-        return img_list, 200
+        return jsonify({'images' : img_list})
 
 class Image(Resource):
     def get(self,id):

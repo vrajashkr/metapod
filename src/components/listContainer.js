@@ -93,10 +93,10 @@ export default function ListContainer(props){
 						props.container_list.map((cont, i) => {
 							return <Container 
 										key = {i}
-										id = {cont.id}
-										name = {cont.name}
-										status = {cont.status}
-										image = {cont.image}
+										id = {cont.ContainerId}
+										name = {cont.Name}
+										status = {cont.Status}
+										image = {cont.Image}
 										clickAction= {() => {handleOpen(cont)}}
 									/>
 						})

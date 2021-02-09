@@ -88,10 +88,10 @@ export default function ListImage(props){
 						props.image_list.map((img, i) => {
 							return <Image 
 										key = {i}
-										id = {img.id}
-										tags = {img.tags}
-										repository = {img.repository}
-										created = {img.created}
+										id = {img.ImageId}
+										tags = {img.Tag}
+										repository = {img.Repository}
+										created = {img.Created}
 										clickAction= {() => {handleOpen(img)}}
 									/>
 						})

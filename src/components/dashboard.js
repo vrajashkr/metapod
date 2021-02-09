@@ -14,55 +14,8 @@ class Dashboard extends Component {
 	constructor(props) {
         super(props);
         this.state = {
-            allContainers: [{
-                id: '123456',
-                name: 'test container 1',
-                image: 'some image',
-                status: 'Running'
-            },
-            {
-                id: '123456',
-                name: 'test container 2',
-                image: 'some image',
-                status: 'Stopped'
-            },
-            {
-                id: '123456',
-                name: 'test container 3',
-                image: 'some image',
-                status: 'Running'
-            },
-            {
-                id: '123456',
-                name: 'test container 4',
-                image: 'some image',
-                status: 'Stopped'
-            },
-            {
-                id: '123456',
-                name: 'test container 5',
-                image: 'some image',
-                status: 'Running'
-            }],
-
-            allImages: [{
-            	id: '123456',
-                tags: 'some tags',
-                repository: 'some repository',
-                created: 'some date'
-            },
-            {
-            	id: '123456',
-                tags: 'some tags',
-                repository: 'some repository',
-                created: 'some date'
-            },
-            {
-            	id: '123456',
-                tags: 'some tags',
-                repository: 'some repository',
-                created: 'some date'
-            }]
+            allContainers: [],
+            allImages: []
         }
 
         this.location = this.location.bind(this);
@@ -93,11 +46,20 @@ class Dashboard extends Component {
 	                        <div className="col s6">
 	                            <Link to="/listContainers" style={container_style} 
 	                                className="btn btn-large waves-effect waves-light black accent-3"
-	                                onClick={() => {document.getElementById("dashboard").style.display = "none";
-	                                			if(document.getElementById("containers")){	  
-	                                				document.getElementById("containers").style.display = "initial";
-	                                			}
-	                            			}}
+	                                onClick={() => {
+	                                	document.getElementById("dashboard").style.display = "none";
+										if(document.getElementById("containers")){	  
+											document.getElementById("containers").style.display = "initial";
+										}
+
+	                                	fetch("/api/v1/containers")
+							    		   .then(response => {
+							    		   		response.json().then(data => {
+                                                    console.log(data);
+							    		   			this.setState({allContainers : data.containers});
+							    		   		})
+							    		    });
+	                                }}
 	                            >
 	                            Containers
 	                            </Link>
@@ -105,11 +67,20 @@ class Dashboard extends Component {
 	                        <div className="col s6">
 	                            <Link to="/listImages" style={container_style}
 	                                className="btn btn-large waves-effect waves-light black accent-3"
-	                                onClick={() => {document.getElementById("dashboard").style.display = "none";
-	                                			if(document.getElementById("images")){	  
-	                                				document.getElementById("images").style.display = "initial";
-	                                			}
-	                            			}}
+	                                onClick={() => {
+                                        document.getElementById("dashboard").style.display = "none";
+                            			if(document.getElementById("images")){	  
+                            				document.getElementById("images").style.display = "initial";
+                            			}
+
+                                        fetch("/api/v1/images")
+                                           .then(response => {
+                                                response.json().then(data => {
+                                                    console.log(data);
+                                                    this.setState({allImages : data.images});
+                                                })
+                                            });
+	                            	}}
 	                            >
 	                            Images
 	                            </Link>
