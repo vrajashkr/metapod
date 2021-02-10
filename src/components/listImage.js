@@ -72,18 +72,8 @@ export default function ListImage(props){
 					><Button size="large"> Back </Button></Link>
 				</nav>
 				<br />
-				<table className="table table-dark">
-					<thead>
-						<tr>
-							<th scope="col">Image Id</th>
-							<th scope="col">Image Tags</th>
-							<th scope="col">Image Repository</th>
-							<th scope="col">Image Created</th>
-							<th scope="col">More Info</th>
-						</tr>
-					</thead>
-				</table>
-				<div>
+				<div style={{display: "grid", margin: "20px 0 50px 0",
+    			gridTemplateColumns: 'repeat(5, 30rem)', gridAutoRows: 'auto', gridGap: '1em'}}>
 					{
 						props.image_list.map((img, i) => {
 							return <Image 

@@ -77,18 +77,8 @@ export default function ListContainer(props){
 					><Button size="large"> Back </Button></Link>
 				</nav>
 				<br />
-				<table className="table table-dark">
-					<thead>
-						<tr>
-							<th scope="col">Container Id</th>
-							<th scope="col">Container Name</th>
-							<th scope="col">Status</th>
-							<th scope="col">Image Name</th>
-							<th scope="col">More Info</th>
-						</tr>
-					</thead>
-				</table>
-				<div>
+				<div style={{display: "grid", margin: "20px 0 50px 0",
+    			gridTemplateColumns: 'repeat(5, 30rem)', gridAutoRows: 'auto', gridGap: '1em'}}>
 					{
 						props.container_list.map((cont, i) => {
 							return <Container 
