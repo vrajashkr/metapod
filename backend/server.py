@@ -60,8 +60,8 @@ class Images(Resource):
         client = docker.from_env()
         img_list = client.images.list(all = True)
         img_list = [{
-                'Repository': i.tags[0].split(':')[0],
-                'Tag': i.tags[0].split(':')[1],
+                'Repository': i.tags[0].split(':')[0] if i.tags else '',
+                'Tag': i.tags[0].split(':')[1] if i.tags else '',
                 'ImageId': i.short_id.split(':')[1],
                 'Created': i.attrs['Created'],
                 'Size': round(i.attrs['Size'] / 1000000, 1)
