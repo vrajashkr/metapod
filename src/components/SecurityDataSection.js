@@ -15,13 +15,25 @@ const securityDataMapper = (source) => {
         [
             "AppArmorProfile",
             <Typography>
-                {source["AppArmorProfile"]}
+                {
+                    source["AppArmorProfile"]===undefined || source["AppArmorProfile"]=== null
+                    ?
+                    "N/A"
+                    :
+                    source["AppArmorProfile"]
+                }
             </Typography>
         ],
         [
             "Read-Only Directories",
             <List>
                 {
+                    source["HostConfig"]["ReadonlyPaths"] === undefined || source["HostConfig"]["ReadonlyPaths"] === null
+                    ?
+                    <ListItem>
+                        N/A
+                    </ListItem>
+                    :
                     source["HostConfig"]["ReadonlyPaths"].map(path =>
                         <ListItem>
                             <Typography>
@@ -36,6 +48,10 @@ const securityDataMapper = (source) => {
             "IPC Mode",
             <Typography>
                 {
+                    source["HostConfig"]["IpcMode"] === undefined ||  source["HostConfig"]["IpcMode"] === null
+                    ?
+                    "N/A"
+                    :
                     source["HostConfig"]["IpcMode"]
                 }
             </Typography>

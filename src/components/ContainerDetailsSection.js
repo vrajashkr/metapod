@@ -36,6 +36,10 @@ export default function ContainerDetailsSection(props){
                                 <TableCell>
                                     <Typography>
                                         {
+                                            getValuefromJSON(props.modaldata,dataMapper[key]) === undefined || getValuefromJSON(props.modaldata,dataMapper[key]) === null
+                                            ?
+                                            "N/A"
+                                            :
                                             getValuefromJSON(props.modaldata,dataMapper[key]).toString()
                                         }
                                     </Typography>

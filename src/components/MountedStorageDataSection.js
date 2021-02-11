@@ -45,6 +45,10 @@ export default function MountedStorageDataSection(props){
                                         <TableCell>
                                             <Typography>
                                                 {
+                                                    entry[mountDataMapper[header]] === undefined || entry[mountDataMapper[header]] === null
+                                                    ?
+                                                    "N/A"
+                                                    :
                                                     entry[mountDataMapper[header]].toString()
                                                 }
                                             </Typography>

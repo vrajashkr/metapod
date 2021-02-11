@@ -15,13 +15,25 @@ const resourceDataMapper = (source) => {
         [
             "CPU Allocation",
             <Typography>
-                {parseInt(source["HostConfig"]["NanoCpus"])/1000000000}
+                {
+                    source["HostConfig"]["NanoCpus"] === undefined || source["HostConfig"]["NanoCpus"] === null
+                    ?
+                    "N/A"
+                    :
+                    parseInt(source["HostConfig"]["NanoCpus"])/1000000000
+                }
             </Typography>
         ],
         [
             "Memory Allocation",
             <Typography>
-                {(source["HostConfig"]["Memory"]/(1024*1024)).toString() + "M"}
+                {   
+                    source["HostConfig"]["Memory"] === undefined || source["HostConfig"]["Memory"] === null
+                    ?
+                    "N/A"
+                    :
+                    (source["HostConfig"]["Memory"]/(1024*1024)).toString() + "M"
+                }
             </Typography>
         ]
     ]

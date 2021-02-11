@@ -25,7 +25,7 @@ const getNetworkDatafromJSON = (source, style) =>{
             "Exposed Ports",
             <List>
                 {
-                    source["Config"]["ExposedPorts"] === undefined
+                    source["Config"]["ExposedPorts"] === undefined || source["Config"]["ExposedPorts"] === null
                     ?
                     <ListItem>
                         N/A
@@ -43,7 +43,7 @@ const getNetworkDatafromJSON = (source, style) =>{
             "Network Mode",
             <Typography>
                 {
-                    source["HostConfig"]["NetworkMode"] === undefined
+                    source["HostConfig"]["NetworkMode"] === undefined || source["HostConfig"]["NetworkMode"] === null
                     ?
                     "N/A"
                     :
@@ -55,7 +55,7 @@ const getNetworkDatafromJSON = (source, style) =>{
             "Are all ports published?",
             <Typography>
                 {
-                    source["HostConfig"]["PublishAllPorts"] === undefined
+                    source["HostConfig"]["PublishAllPorts"] === undefined || source["HostConfig"]["PublishAllPorts"] === null
                     ?
                     "N/A"
                     :
