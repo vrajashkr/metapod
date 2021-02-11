@@ -121,9 +121,9 @@ export default function ListImage(props){
 					><Button size="large"> Back </Button></Link>
 				</nav>
 				<br />
-				<div style={{marginLeft: "25px"}}>
+				<div style={{marginLeft: "60px"}}>
 					<div style={{display: "grid", margin: "20px 0 50px 0",
-	    			gridTemplateColumns: 'repeat(5, 30rem)', gridAutoRows: 'auto', gridGap: '1em'}}>
+	    			gridTemplateColumns: 'repeat(3, 30rem)', gridAutoRows: 'auto', gridGap: '1em'}}>
 						{
 							props.image_list.map((img, i) => {
 								return <Image 

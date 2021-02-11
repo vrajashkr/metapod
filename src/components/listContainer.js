@@ -137,9 +137,9 @@ export default function ListContainer(props){
 					><Button size="large"> Back </Button></Link>
 				</nav>
 				<br />
-				<div style={{marginLeft: "25px"}}>
-					<div style={{marginLeft: "25px", display: "grid", margin: "20px 0 50px 0",
-	    			gridTemplateColumns: 'repeat(5, 30rem)', gridAutoRows: 'auto', gridGap: '1em'}}>
+				<div style={{marginLeft: "60px"}}>
+					<div style={{display: "grid", margin: "20px 0 50px 0",
+	    			gridTemplateColumns: 'repeat(3, 30rem)', gridAutoRows: 'auto', gridGap: '1em'}}>
 						{
 							props.container_list.map((cont, i) => {
 								return <Container 
