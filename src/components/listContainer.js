@@ -3,10 +3,6 @@ import { BrowserRouter as Router, Link, Route } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItem from '@material-ui/core/ListItem';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
@@ -15,17 +11,35 @@ import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
 import Container from './container';
 import Dashboard from './dashboard';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import {CircularProgress, Grid} from '@material-ui/core';
+import ContainerDetailsSection from "./ContainerDetailsSection";
+import NetworkDetailsSection from './NetworkDetailsSection';
+import SecurityDataSection from './SecurityDataSection';
+import ResourceDataSection from './ResourceDataSection';
+import MountedStorageDataSection from './MountedStorageDataSection';
 import Paper from '@material-ui/core/Paper';
+import ListItem from '@material-ui/core/ListItem';
+import List from '@material-ui/core/List';
+import Drawer from '@material-ui/core/Drawer';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Divider from '@material-ui/core/Divider';
+import DnsIcon from '@material-ui/icons/Dns';
+import InfoIcon from '@material-ui/icons/Info';
+import SecurityIcon from '@material-ui/icons/Security';
+import MemoryIcon from '@material-ui/icons/Memory';
+import StorageIcon from '@material-ui/icons/Storage';
+import EditIcon from '@material-ui/icons/Edit';
+
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
+	root: {
+		display: 'flex',
+	  },
 	appBar: {
-	  position: 'relative',
+	  position: 'fixed',
+	  zIndex: theme.zIndex.drawer + 1,
 	},
 	title: {
 	  marginLeft: theme.spacing(2),
@@ -34,8 +48,22 @@ const useStyles = makeStyles((theme) => ({
 	margins :{
 		marginTop: "1em",
 		marginLeft: "1em",
+	},
+	drawer: {
+		width: drawerWidth,
+		flexShrink: 0,
+	},
+	drawerPaper: {
+		width: drawerWidth,
+	},
+	drawerContainer: {
+		overflow: 'auto',
+	},
+	content: {
+		flexGrow: 1,
+		padding: theme.spacing(3),
 	}
-  }));
+}));
 
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
@@ -46,7 +74,9 @@ export default function ListContainer(props){
 	const styles = useStyles();
 
 	const [open, setOpen] = React.useState(false);
+	const [dataReady, setDataReady] = React.useState(false);
 	const [modalData, setModalData] = React.useState({});
+	const [currentViewIndex, setCurrentViewIndex] = React.useState(0);
 	
 	const location = () => {
 		console.log(window.location.href);
@@ -57,14 +87,43 @@ export default function ListContainer(props){
 	
 	const handleClose = () =>{
 		setOpen(false);
+		setDataReady(false);
 		setModalData({});
 	}
 
 	const handleOpen = (container) => {
 		setModalData(container);
 		setOpen(true);
+		fetch("/api/v1/containers/"+container.ContainerId).then(
+			response =>{
+				response.json().then((data)=>{
+					setModalData(data);
+					setDataReady(true);
+				})
+			}
+		)
 	}
 
+	const getView = (source, index) => {
+		let views =[
+			<Typography>Click an option to begin</Typography>,
+			<ContainerDetailsSection modaldata={source} styles={styles}/>,
+			<NetworkDetailsSection modaldata={source} styles={styles}/>,
+			<SecurityDataSection modaldata={source} styles={styles}/>,
+			<ResourceDataSection modaldata={source} styles={styles}/>,
+			<MountedStorageDataSection modaldata={source} styles={styles}/>
+		]
+		return views[index];
+	}
+
+	const viewHeadings = [
+		"Click an option to view details",
+		"Container Details",
+		"Network Details",
+		"Security Details",
+		"Resource Details",
+		"Mounted Storage Details"
+	]
 	return (
 		<>
 		<div id="containers">
@@ -97,79 +156,64 @@ export default function ListContainer(props){
 		</div>
 
 		<Dialog fullScreen open={open} onClose={handleClose} TransitionComponent={Transition}>
-			<AppBar className={styles.appBar}>
-			<Toolbar>
-				<IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-				<CloseIcon />
-				</IconButton>
-				<Typography variant="h6" className={styles.title}>
-					Container: {modalData.name}
-				</Typography>
-				<Button autoFocus color="inherit" onClick={handleClose}>
-					save
-				</Button>
-			</Toolbar>
-			</AppBar>
-			<Typography variant="h5" className={styles.margins}>
-				Container Details
-			</Typography>
-			<TableContainer component={Paper} style={{"width":"30%", "textAlign":"center"}} className={styles.margins}>
-				<Table aria-label="details table" >
-					<TableBody>
-						<TableRow>
-							<TableCell>
-								<Typography>
-									Container ID
-								</Typography>
-							</TableCell>
-							<TableCell>
-								<Typography>
-									{modalData.id}
-								</Typography>
-							</TableCell>
-						</TableRow>
-
-						<TableRow>
-							<TableCell>
-								<Typography>
-									Container Name
-								</Typography>
-							</TableCell>
-							<TableCell>
-								<Typography>
-									{modalData.name}
-								</Typography>
-							</TableCell>
-						</TableRow>
-
-						<TableRow>
-							<TableCell>
-								<Typography>
-									Container Status
-								</Typography>
-							</TableCell>
-							<TableCell>
-								<Typography>
-									{modalData.status}
-								</Typography>
-							</TableCell>
-						</TableRow>
-
-						<TableRow>
-							<TableCell>
-								<Typography>
-									Container Image
-								</Typography>
-							</TableCell>
-							<TableCell>
-								<Typography>
-									{modalData.image}
-								</Typography>
-							</TableCell>
-						</TableRow>
-					</TableBody>
-				</Table>
-			</TableContainer>
+			{
+				!dataReady
+				?
+				<CircularProgress />
+				:
+				<div className={styles.root}>
+				<AppBar className={styles.appBar}>
+				<Toolbar>
+					<IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+					<CloseIcon />
+					</IconButton>
+					<Typography variant="h6" className={styles.title}>
+						Container: {modalData["Name"]}
+					</Typography>
+					<Button autoFocus color="inherit" onClick={handleClose}>
+						save
+					</Button>
+				</Toolbar>
+				</AppBar>
+				<Drawer
+					className={styles.drawer}
+					variant="permanent"
+					classes={{
+						paper: styles.drawerPaper,
+					}}
+				>
+					<Toolbar />
+					<div className={styles.drawerContainer}>
+					<List>
+						{[['Container Details',<InfoIcon/>], ['Network Details',<DnsIcon/> ], ['Security Details', <SecurityIcon/>], ['Resource Details', <MemoryIcon/>], ['Mounted Storage Details',<StorageIcon/>]].map((entry,index) => (
+						<ListItem button key={entry[0]} onClick={()=>{setCurrentViewIndex(index+1)}}>
+							<ListItemIcon>{entry[1]}</ListItemIcon>
+							<ListItemText primary={entry[0]} />
+						</ListItem>
+						))}
+					</List>
+					<Divider />
+					<List>
+						{['Change Resource Allocation', 'Apply Security Rules'].map((text, index) => (
+						<ListItem button key={text}>
+							<ListItemIcon><EditIcon/></ListItemIcon>
+							<ListItemText primary={text} />
+						</ListItem>
+						))}
+					</List>
+					</div>
+				</Drawer>
+				<main className={styles.content} style={{"textAlign":"center"}}>
+					<Toolbar/>
+					<Typography style={{fontSize:"1.5rem"}}>
+						{viewHeadings[currentViewIndex]}
+					</Typography>
+					 {
+						getView(modalData,currentViewIndex)
+					 }
+				</main>
+				</div>
+			}
 		</Dialog>
 		</>
 	);
