@@ -121,20 +121,22 @@ export default function ListImage(props){
 					><Button size="large"> Back </Button></Link>
 				</nav>
 				<br />
-				<div style={{display: "grid", margin: "20px 0 50px 0",
-    			gridTemplateColumns: 'repeat(5, 30rem)', gridAutoRows: 'auto', gridGap: '1em'}}>
-					{
-						props.image_list.map((img, i) => {
-							return <Image 
-										key = {i}
-										id = {img.ImageId}
-										tags = {img.Tag}
-										repository = {img.Repository}
-										created = {img.Created}
-										clickAction= {() => {handleOpen(img)}}
-									/>
-						})
-					}
+				<div style={{marginLeft: "25px"}}>
+					<div style={{display: "grid", margin: "20px 0 50px 0",
+	    			gridTemplateColumns: 'repeat(5, 30rem)', gridAutoRows: 'auto', gridGap: '1em'}}>
+						{
+							props.image_list.map((img, i) => {
+								return <Image 
+											key = {i}
+											id = {img.ImageId}
+											tags = {img.Tag}
+											repository = {img.Repository}
+											created = {img.Created}
+											clickAction= {() => {handleOpen(img)}}
+										/>
+							})
+						}
+					</div>
 				</div>
 				<Route path="/dashboard" render={() => {<Dashboard />}} />
 			</Router>

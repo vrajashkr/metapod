@@ -5,7 +5,8 @@ import ListContainer from './listContainer';
 import ListImage from './listImage';
 
 var container_style = {
-    width: "175px",
+    width: "250px",
+    height: "55px",
     borderRadius: "3px",
     letterSpacing: "1.5px"
 }
@@ -40,7 +41,9 @@ class Dashboard extends Component {
 	                <div className="row">
 	                    <div className="col s12 center-align">
 	                        <div className="flow-text grey-text text-darken-4">
-	                            <h4> View the containers and images present on the host.</h4>
+	                        	<br /><br /><br /><br />
+	                        	<h4><i className="material-icons">code</i> Metapod </h4>
+	                            <h4> A tool to safeguard containers and images present on the host!</h4>
 	                        </div>
 	                        <br />
 	                        <div className="col s6">
@@ -61,7 +64,7 @@ class Dashboard extends Component {
 							    		    });
 	                                }}
 	                            >
-	                            Containers
+	                            View Containers
 	                            </Link>
 	                        </div>
 	                        <div className="col s6">
@@ -82,7 +85,7 @@ class Dashboard extends Component {
                                             });
 	                            	}}
 	                            >
-	                            Images
+	                            View Images
 	                            </Link>
 	                        </div>
 	                    </div>
