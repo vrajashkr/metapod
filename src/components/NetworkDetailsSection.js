@@ -25,6 +25,12 @@ const getNetworkDatafromJSON = (source, style) =>{
             "Exposed Ports",
             <List>
                 {
+                    source["Config"]["ExposedPorts"] === undefined
+                    ?
+                    <ListItem>
+                        N/A
+                    </ListItem>
+                    :
                     Object.keys(source["Config"]["ExposedPorts"]).map(port => 
                         <ListItem>
                             {port}
@@ -36,13 +42,25 @@ const getNetworkDatafromJSON = (source, style) =>{
         [
             "Network Mode",
             <Typography>
-                {source["HostConfig"]["NetworkMode"]}
+                {
+                    source["HostConfig"]["NetworkMode"] === undefined
+                    ?
+                    "N/A"
+                    :
+                    source["HostConfig"]["NetworkMode"]
+                }
             </Typography>
         ],
         [
             "Are all ports published?",
             <Typography>
-                {source["HostConfig"]["PublishAllPorts"].toString()}
+                {
+                    source["HostConfig"]["PublishAllPorts"] === undefined
+                    ?
+                    "N/A"
+                    :
+                    source["HostConfig"]["PublishAllPorts"].toString()
+                }
             </Typography>
         ],
         [
