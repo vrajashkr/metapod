@@ -20,7 +20,11 @@ const resourceDataMapper = (source) => {
                     ?
                     "N/A"
                     :
-                    parseInt(source["HostConfig"]["NanoCpus"])/1000000000
+                        source["HostConfig"]["NanoCpus"] === 0
+                        ?
+                        "Unlimited - system default (0)"
+                        :
+                        parseInt(source["HostConfig"]["NanoCpus"])/1000000000
                 }
             </Typography>
         ],
@@ -32,7 +36,11 @@ const resourceDataMapper = (source) => {
                     ?
                     "N/A"
                     :
-                    (source["HostConfig"]["Memory"]/(1024*1024)).toString() + "M"
+                        source["HostConfig"]["Memory"] === 0
+                        ?
+                        "Unlimited - system default (0)"
+                        :
+                        (source["HostConfig"]["Memory"]/(1024*1024)).toString() + "M"
                 }
             </Typography>
         ]
