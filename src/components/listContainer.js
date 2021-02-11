@@ -89,6 +89,7 @@ export default function ListContainer(props){
 		setOpen(false);
 		setDataReady(false);
 		setModalData({});
+		setCurrentViewIndex(0);
 	}
 
 	const handleOpen = (container) => {
