@@ -137,20 +137,22 @@ export default function ListContainer(props){
 					><Button size="large"> Back </Button></Link>
 				</nav>
 				<br />
-				<div style={{display: "grid", margin: "20px 0 50px 0",
-    			gridTemplateColumns: 'repeat(5, 30rem)', gridAutoRows: 'auto', gridGap: '1em'}}>
-					{
-						props.container_list.map((cont, i) => {
-							return <Container 
-										key = {i}
-										id = {cont.ContainerId}
-										name = {cont.Name}
-										status = {cont.Status}
-										image = {cont.Image}
-										clickAction= {() => {handleOpen(cont)}}
-									/>
-						})
-					}
+				<div style={{marginLeft: "25px"}}>
+					<div style={{marginLeft: "25px", display: "grid", margin: "20px 0 50px 0",
+	    			gridTemplateColumns: 'repeat(5, 30rem)', gridAutoRows: 'auto', gridGap: '1em'}}>
+						{
+							props.container_list.map((cont, i) => {
+								return <Container 
+											key = {i}
+											id = {cont.ContainerId}
+											name = {cont.Name}
+											status = {cont.Status}
+											image = {cont.Image}
+											clickAction= {() => {handleOpen(cont)}}
+										/>
+							})
+						}
+					</div>
 				</div>
 				<Route path="/dashboard" render={() => {<Dashboard />}} />
 			</Router>
