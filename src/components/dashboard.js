@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Link, Route } from "react-router-dom";
+import { Card, Form, Button } from 'react-bootstrap';
 
 import ListContainer from './listContainer';
 import ListImage from './listImage';
@@ -38,17 +39,22 @@ class Dashboard extends Component {
 		return (
 			<Router>
 				<div id="dashboard">
+					<nav>
+						<Button 
+						style={{width: "10em", height: "3em", margin: "0.20em 0 0 0", marginRight: "0.5em", 
+							opacity:0.8, float: "right", outline: "none",
+							borderStyle: "none"}} size="lg" onClick={this.props.active}> Logout </Button>
+					</nav>
 	                <div className="row">
 	                    <div className="col s12 center-align">
 	                        <div className="flow-text grey-text text-darken-4">
 	                        	<br /><br /><br /><br />
-	                        	<h4><i className="material-icons">code</i> Metapod </h4>
-	                            <h4> A tool to safeguard containers and images present on the host!</h4>
+	                        	<h1><i className="material-icons">code</i> Metapod </h1>
+	                            <h3> A tool to safeguard containers and images present on the host!</h3>
 	                        </div>
 	                        <br />
 	                        <div className="col s6">
-	                            <Link to="/listContainers" style={container_style} 
-	                                className="btn btn-large waves-effect waves-light black accent-3"
+	                            <Link to="/listContainers" 
 	                                onClick={() => {
 	                                	document.getElementById("dashboard").style.display = "none";
 										if(document.getElementById("containers")){	  
@@ -64,12 +70,12 @@ class Dashboard extends Component {
 							    		    });
 	                                }}
 	                            >
+	                            <Button style={{width: "20em", height: "3em", backgroundColor: "black", borderStyle: "none"}} size="lg">
 	                            View Containers
-	                            </Link>
+	                            </Button></Link>
 	                        </div>
 	                        <div className="col s6">
-	                            <Link to="/listImages" style={container_style}
-	                                className="btn btn-large waves-effect waves-light black accent-3"
+	                            <Link to="/listImages"	   
 	                                onClick={() => {
                                         document.getElementById("dashboard").style.display = "none";
                             			if(document.getElementById("images")){	  
@@ -85,8 +91,9 @@ class Dashboard extends Component {
                                             });
 	                            	}}
 	                            >
+	                            <Button style={{width: "20em", height: "3em", backgroundColor: "black", borderStyle: "none"}} size="lg"> 
 	                            View Images
-	                            </Link>
+	                            </Button></Link>
 	                        </div>
 	                    </div>
 	                </div>

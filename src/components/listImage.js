@@ -114,7 +114,7 @@ export default function ListImage(props){
 		<div id="images">
 			<Router>
 				<nav>
-					<Link to="/dashboard"
+					<Link to="/dashboard" style= {{textDecoration: "none"}}
 						onClick = {() => {document.getElementById("images").style.display = "none";
 											document.getElementById("dashboard").style.display = "initial";
 									}}

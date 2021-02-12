@@ -130,16 +130,16 @@ export default function ListContainer(props){
 		<div id="containers">
 			<Router>
 				<nav>
-					<Link to="/dashboard"
+					<Link to="/dashboard" style= {{textDecoration: "none"}}
 						onClick = {() => {document.getElementById("containers").style.display = "none";
 											document.getElementById("dashboard").style.display = "initial";
 									}}
 					><Button size="large"> Back </Button></Link>
 				</nav>
 				<br />
-				<div style={{marginLeft: "60px"}}>
-					<div style={{display: "grid", margin: "20px 0 50px 0",
-	    			gridTemplateColumns: 'repeat(3, 30rem)', gridAutoRows: 'auto', gridGap: '1em'}}>
+				<div style={{marginLeft: "4.5em"}}>
+					<div style={{display: "grid", margin: "2em 0 3em 0",
+	    			gridTemplateColumns: 'repeat(3, 30em)', gridAutoRows: 'auto', gridGap: '1em'}}>
 						{
 							props.container_list.map((cont, i) => {
 								return <Container 

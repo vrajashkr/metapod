@@ -1,11 +1,15 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
+from pymongo import MongoClient
+from flask_bcrypt import Bcrypt
+
 import docker
 import inspect
 import pprint
 
 app = Flask(__name__)
 api = Api(app)
+bcrypt = Bcrypt(app)
 
 def get_necess_data(data, necess_attrs):
     return {
@@ -15,6 +19,54 @@ def get_necess_data(data, necess_attrs):
                 else data[i]
             ) for i in necess_attrs if i in data
         }
+
+class Register(Resource):
+    def post(self):
+        cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+
+        db = cluster["metapod"]
+        collection = db["users"]
+        
+        email = request.json['email']
+        password = request.json['password']
+
+        if(collection.find_one({'email': email}) is None):
+            hashed_pwd = bcrypt.generate_password_hash(password).decode('utf-8')
+
+            entry = {
+                    "email" : email,
+                    "password" : hashed_pwd 
+                }
+
+            collection.insert_one(entry)
+
+            return {'result': "user registered"}   
+        else:
+            return {'result': "user already exists"}
+
+class Login(Resource):
+    def post(self):
+        cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+
+        db = cluster["metapod"]
+        collection = db["users"]
+
+        email = request.json['email']
+        password = request.json['password']
+
+        entry = collection.find_one({'email': email})
+        
+        if(entry is not None):
+            result = bcrypt.check_password_hash(entry['password'], password)
+
+            if(result == True):
+                return {'result': "user authenticated"}
+            else:
+                return {'result': "invalid credentials"}
+
+        else:
+            return {'result': "user not found"}        
+
 
 class Containers(Resource):
     def get(self):
@@ -96,6 +148,8 @@ api.add_resource(Containers, '/api/v1/containers')
 api.add_resource(Container, '/api/v1/containers/<string:id_or_name>')
 api.add_resource(Images, '/api/v1/images')
 api.add_resource(Image, '/api/v1/images/<string:id_or_name>')
+api.add_resource(Register, '/api/v1/register')
+api.add_resource(Login, '/api/v1/login')
 
 if __name__ == '__main__':
     app.run(debug=True)
