@@ -17,6 +17,8 @@ import NetworkDetailsSection from './NetworkDetailsSection';
 import SecurityDataSection from './SecurityDataSection';
 import ResourceDataSection from './ResourceDataSection';
 import MountedStorageDataSection from './MountedStorageDataSection';
+import ChangeContainerResourceAlloc from './ChangeContainerResourceAlloc';
+import ContainerSecurityRules from './ContainerSecurityRules';
 import Paper from '@material-ui/core/Paper';
 import ListItem from '@material-ui/core/ListItem';
 import List from '@material-ui/core/List';
@@ -112,7 +114,9 @@ export default function ListContainer(props){
 			<NetworkDetailsSection modaldata={source} styles={styles}/>,
 			<SecurityDataSection modaldata={source} styles={styles}/>,
 			<ResourceDataSection modaldata={source} styles={styles}/>,
-			<MountedStorageDataSection modaldata={source} styles={styles}/>
+			<MountedStorageDataSection modaldata={source} styles={styles}/>,
+			<ChangeContainerResourceAlloc modaldata={source} styles={styles}/>,
+			<ContainerSecurityRules styles={styles}/>
 		]
 		return views[index];
 	}
@@ -123,7 +127,9 @@ export default function ListContainer(props){
 		"Network Details",
 		"Security Details",
 		"Resource Details",
-		"Mounted Storage Details"
+		"Mounted Storage Details",
+		"Change Resource Allocation",
+		"Security Rules"
 	]
 	return (
 		<>
@@ -198,7 +204,7 @@ export default function ListContainer(props){
 					<Divider />
 					<List>
 						{['Change Resource Allocation', 'Apply Security Rules'].map((text, index) => (
-						<ListItem button key={text}>
+						<ListItem button key={text} onClick={()=>{setCurrentViewIndex(index+5+1)}}>
 							<ListItemIcon><EditIcon/></ListItemIcon>
 							<ListItemText primary={text} />
 						</ListItem>
