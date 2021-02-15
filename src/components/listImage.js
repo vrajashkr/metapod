@@ -20,6 +20,8 @@ import Divider from '@material-ui/core/Divider';
 import InfoIcon from '@material-ui/icons/Info';
 import EditIcon from '@material-ui/icons/Edit';
 import ImageDetailsSection from './ImageDetailsSection';
+import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 const drawerWidth = 240;
 
@@ -113,12 +115,15 @@ export default function ListImage(props){
 		<>
 		<div id="images">
 			<Router>
-				<nav>
+				<nav className="navbar navbar-expand-lg bg-dark">
 					<Link to="/dashboard" style= {{textDecoration: "none"}}
 						onClick = {() => {document.getElementById("images").style.display = "none";
 											document.getElementById("dashboard").style.display = "initial";
 									}}
-					><Button size="large"> Back </Button></Link>
+					><KeyboardBackspaceIcon fontSize="large"/></Link>
+				</nav>
+				<nav style={{height: "4em"}}>
+					<p style={{margin: "0 1.5em"}}>Click to refresh: <Button><RefreshIcon fontSize="large" onClick={props.update}/></Button></p>
 				</nav>
 				<br />
 				<div style={{marginLeft: "60px"}}>

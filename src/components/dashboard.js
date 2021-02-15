@@ -21,6 +21,8 @@ class Dashboard extends Component {
         }
 
         this.location = this.location.bind(this);
+        this.containerUpdate = this.containerUpdate.bind(this);
+        this.imageUpdate = this.imageUpdate.bind(this);
     } 
 
     location(){
@@ -32,6 +34,30 @@ class Dashboard extends Component {
     			document.getElementById("images").style.display = "none";
     		}
 		}
+    }
+
+    containerUpdate(e){
+    	e.preventDefault();
+
+    	fetch("/api/v1/containers")
+		   .then(response => {
+		   		response.json().then(data => {
+                    console.log(data);
+		   			this.setState({allContainers : data.containers});
+		   		})
+		    });
+    }
+
+    imageUpdate(e){
+    	e.preventDefault();
+
+    	fetch("/api/v1/images")
+           .then(response => {
+                response.json().then(data => {
+                    console.log(data);
+                    this.setState({allImages : data.images});
+                })
+            });
     }
 
 	render(){
@@ -98,8 +124,10 @@ class Dashboard extends Component {
 	                    </div>
 	                </div>
 	            </div>	
-                <Route path="/listContainers" render={() => <ListContainer container_list={this.state.allContainers} />}/>
-                <Route path="/listImages" render={() => <ListImage image_list={this.state.allImages} />}/>
+                <Route path="/listContainers" render={() => <ListContainer container_list={this.state.allContainers} 
+                update={this.containerUpdate} />}/>
+                <Route path="/listImages" render={() => <ListImage image_list={this.state.allImages} 
+                update={this.imageUpdate} />}/>
             </Router>
 		);
 	}

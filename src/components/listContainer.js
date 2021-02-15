@@ -32,6 +32,8 @@ import SecurityIcon from '@material-ui/icons/Security';
 import MemoryIcon from '@material-ui/icons/Memory';
 import StorageIcon from '@material-ui/icons/Storage';
 import EditIcon from '@material-ui/icons/Edit';
+import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
+import RefreshIcon from '@material-ui/icons/Refresh';
 
 const drawerWidth = 240;
 
@@ -135,12 +137,15 @@ export default function ListContainer(props){
 		<>
 		<div id="containers">
 			<Router>
-				<nav>
+				<nav class="navbar navbar-expand-lg bg-dark">
 					<Link to="/dashboard" style= {{textDecoration: "none"}}
 						onClick = {() => {document.getElementById("containers").style.display = "none";
 											document.getElementById("dashboard").style.display = "initial";
 									}}
-					><Button size="large"> Back </Button></Link>
+					><KeyboardBackspaceIcon fontSize="large"/></Link>
+				</nav>
+				<nav style={{height: "4em"}}>
+					<p style={{margin: "0 1.5em"}}>Click to refresh: <Button><RefreshIcon fontSize="large" onClick={props.update}/></Button></p>
 				</nav>
 				<br />
 				<div style={{marginLeft: "4.5em"}}>
