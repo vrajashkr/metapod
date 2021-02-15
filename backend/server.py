@@ -72,9 +72,19 @@ class Containers(Resource):
     def get(self):
         #CONTAINER ID   IMAGE     COMMAND                  CREATED       STATUS                   PORTS     NAMES
         #598079914e20   nginx     "/docker-entrypoint.…"   3 hours ago   Exited (0) 3 hours ago             zen_cerf
+
+        cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+
+        db = cluster["metapod"]
+        collection = db["containers"]
+
+        if(collection.count_documents({}) != 0):
+            collection.delete_many({})
+
         client = docker.from_env()
-        cont_list = client.containers.list(all = True)
-        cont_list = [{
+
+        for c in client.containers.list(all = True):
+            entry = {
                 'ContainerId': c.short_id,
                 'Image': c.attrs['Config']['Image'],
                 'Command': c.attrs['Path'],
@@ -82,8 +92,16 @@ class Containers(Resource):
                 'Status': c.status + ' (' + str(c.attrs['State']['ExitCode']) + ') at ' + c.attrs['State']['FinishedAt'],
                 'Ports': c.ports,
                 'Name': c.name
-            } for c in cont_list]
-        return {'containers' : cont_list}, 200
+            }
+
+            collection.insert_one(entry)
+
+        allContainers = []
+        for doc in collection.find({}):
+            doc.pop('_id')
+            allContainers.append(doc)
+
+        return {'containers' : allContainers}, 200
 
 class Container(Resource):
     def get(self,id_or_name):
@@ -109,16 +127,34 @@ class Images(Resource):
     def get(self):
         #REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
         #ubuntu       latest    f63181f19b2f   2 weeks ago   72.9MB
+
+        cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+
+        db = cluster["metapod"]
+        collection = db["images"]
+
+        if(collection.count_documents({}) != 0):
+            collection.delete_many({})
+
         client = docker.from_env()
-        img_list = client.images.list(all = True)
-        img_list = [{
+
+        for i in client.images.list(all = True):
+            entry = {
                 'Repository': i.tags[0].split(':')[0] if i.tags else '',
                 'Tag': i.tags[0].split(':')[1] if i.tags else '',
                 'ImageId': i.short_id.split(':')[1],
                 'Created': i.attrs['Created'],
                 'Size': round(i.attrs['Size'] / 1000000, 1)
-            } for i in img_list]
-        return {'images' : img_list}, 200
+            }
+
+            collection.insert_one(entry)
+
+        allImages = []
+        for doc in collection.find({}):
+            doc.pop('_id')
+            allImages.append(doc)
+
+        return {'images' : allImages}, 200
 
 class Image(Resource):
     def get(self,id_or_name):
