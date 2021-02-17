@@ -104,15 +104,15 @@ class Containers(Resource):
         return {'containers' : allContainers}, 200
 
 class Container(Resource):
-    def get(self,id_or_name):
+    def get(self, name):
         client = docker.from_env()
-        cont = client.containers.get(id_or_name)
+        cont = client.containers.get(name)
 
         necess_attrs = {
             'AppArmorProfile': [],
             'Config': ['Cmd', 'Entrypoint', 'ExposedPorts', 'Hostname', 'Image', 'User', 'Volumes', 'WorkingDir'],
             'Created': [],
-            'HostConfig': ['CapAdd', 'CapDrop', 'Cgroup', 'CgroupParent', 'CpuCount', 'CpuShares', 'CpusetCpus', 'CpusetMems', 'DeviceCgroupRules', 'Devices', 'IOMaximumBandwidth', 'IOMaximumIOps', 'IpcMode', 'MaskedPaths', 'Memory', 'MemoryReservation', 'NanoCpus', 'NetworkMode', 'PortBindings', 'Privileged', 'PublishAllPorts', 'ReadonlyPaths', 'ReadonlyRootfs'],
+            'HostConfig': ['CapAdd', 'CapDrop', 'Cgroup', 'CgroupParent', 'CpuCount', 'CpuQuota', 'CpuShares', 'CpusetCpus', 'CpusetMems', 'DeviceCgroupRules', 'Devices', 'IOMaximumBandwidth', 'IOMaximumIOps', 'IpcMode', 'MaskedPaths', 'Memory', 'MemoryReservation', 'NetworkMode', 'PortBindings', 'Privileged', 'PublishAllPorts', 'ReadonlyPaths', 'ReadonlyRootfs'],
             'Id': [],
             'Image': [],
             'Mounts': [],
@@ -157,7 +157,7 @@ class Images(Resource):
         return {'images' : allImages}, 200
 
 class Image(Resource):
-    def get(self,id_or_name):
+    def get(self, id_or_name):
         client = docker.from_env()
         img = client.images.get(id_or_name)
 
@@ -180,12 +180,56 @@ class Image(Resource):
 
         return get_necess_data(img.attrs, necess_attrs), 200
 
-api.add_resource(Containers, '/api/v1/containers')
-api.add_resource(Container, '/api/v1/containers/<string:id_or_name>')
-api.add_resource(Images, '/api/v1/images')
-api.add_resource(Image, '/api/v1/images/<string:id_or_name>')
+class Resources(Resource):
+    def post(self, name):
+        cpu_quota = request.form['CpuQuota']
+        mem_limit = request.form['Memory']
+        client = docker.from_env()
+        cont = client.containers.get(name)
+        cont.update(cpu_quota = cpu_quota, mem_limit = mem_limit)
+        return {}, 200
+
+class Rules(Resource):
+    def post(self, name):
+        rules = request.form['Rules']
+        rule_action = {
+            'Drop NET_RAW': cap_handler('NET_RAW'), 
+            'Drop MKNOD': cap_handler('MKNOD')
+        }
+        for i in rules:
+            rule_action[i['RuleName']](name, i['Checked'])
+        return {}, 200
+
+def cap_handler(cap):
+    def particular_cap_handler(name, checked):
+        client = docker.from_env()
+        cont = client.containers.get(name)
+        cpu_quota = cont.attrs['HostConfig']['CpuQuota']
+        mem_limit = cont.attrs['HostConfig']['Memory']
+        ports = cont.attrs['Config']['ExposedPorts']
+        image = cont.attrs['Config']['Image']
+
+        if checked:
+            cap_drop = [cap]
+            if cont.attrs['HostConfig']['CapDrop']:
+                cap_drop = list(set(cap_drop) | set(cont.attrs['HostConfig']['CapDrop']))
+        if not checked: 
+            cap_drop = []
+            if cont.attrs['HostConfig']['CapDrop']:
+                cap_drop = list(set(cont.attrs['HostConfig']['CapDrop']) - {cap})
+
+        cont.remove()
+        client.containers.run(image = image, name = name, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports)
+    return particular_cap_handler
+
 api.add_resource(Register, '/api/v1/register')
 api.add_resource(Login, '/api/v1/login')
+api.add_resource(Containers, '/api/v1/containers')
+api.add_resource(Container, '/api/v1/containers/<string:name>')
+api.add_resource(Images, '/api/v1/images')
+api.add_resource(Image, '/api/v1/images/<string:id_or_name>')
+api.add_resource(Resources, '/api/v1/containers/<string:name>/resources')
+api.add_resource(Rules, '/api/v1/containers/<string:name>/rules')
 
 if __name__ == '__main__':
     app.run(debug=True)
