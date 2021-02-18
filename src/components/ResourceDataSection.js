@@ -16,15 +16,15 @@ const resourceDataMapper = (source) => {
             "CPU Allocation",
             <Typography>
                 {
-                    source["HostConfig"]["NanoCpus"] === undefined || source["HostConfig"]["NanoCpus"] === null
+                    source["HostConfig"]["CpuQuota"] === undefined || source["HostConfig"]["CpuQuota"] === null
                     ?
                     "N/A"
                     :
-                        source["HostConfig"]["NanoCpus"] === 0
+                        source["HostConfig"]["CpuQuota"] === 0
                         ?
                         "Unlimited - system default (0)"
                         :
-                        parseInt(source["HostConfig"]["NanoCpus"])/1000000000
+                        parseInt(source["HostConfig"]["CpuQuota"])/100000
                 }
             </Typography>
         ],

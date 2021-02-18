@@ -11,15 +11,15 @@ import TableRow from '@material-ui/core/TableRow';
 export default function ChangeContainerResourceAlloc(props){
 
     const resourcesMapper = (source) => {
-        let currentCPUValue = source["HostConfig"]["NanoCpus"] === undefined || source["HostConfig"]["NanoCpus"] === null
+        let currentCPUValue = source["HostConfig"]["CpuQuota"] === undefined || source["HostConfig"]["CpuQuota"] === null
         ?
         "N/A"
         :
-            source["HostConfig"]["NanoCpus"] === 0
+            source["HostConfig"]["CpuQuota"] === 0
             ?
             "Unlimited - system default (0)"
             :
-            parseInt(source["HostConfig"]["NanoCpus"])/1000000000;
+            parseInt(source["HostConfig"]["CpuQuota"])/100000;
         
         let currentMemoryValue = source["HostConfig"]["Memory"] === undefined || source["HostConfig"]["Memory"] === null
         ?
@@ -38,6 +38,7 @@ export default function ChangeContainerResourceAlloc(props){
                             label="CPU Allocation"
                             variant="standard"
                             value={currentCPUValue}
+                            id="cpualloc"
                     />
                 ],
                 [
@@ -46,10 +47,42 @@ export default function ChangeContainerResourceAlloc(props){
                             label="Memory Allocation"
                             variant="standard"
                             value={currentMemoryValue}
+                            id="memalloc"
                     />
                 ]
             ];
         return data;
+    }
+
+    const [processing, setProcessing] = React.useState(false);
+
+    const handleApply = () => {
+        let dataJSON = {
+            "CpuQuota": 0,
+            "Memory" : 0
+        };
+        
+        let cpu = parseFloat(document.getElementById("cpualloc").value) * 100000;
+        let mem = parseInt(document.getElementById("memalloc").value) * 1024 * 1024;
+
+        dataJSON["CpuQuota"] = isNaN(cpu) ? 0 : 200000;
+        dataJSON["Memory"] = isNaN(mem) ? 500000000 : mem;
+        
+        setProcessing(true);
+        console.log(dataJSON);
+
+        fetch("/api/v1/containers/"+props.modaldata["CName"]+"/resources", {
+            method: "post",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataJSON)
+        })
+        .then((response) => { 
+            console.log(response)
+            setProcessing(false);
+        });
+        
     }
 
     return(
@@ -80,7 +113,7 @@ export default function ChangeContainerResourceAlloc(props){
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button style={{marginTop:"2em"}} color="secondary" variant='contained'>Apply Changes</Button>
+            <Button style={{marginTop:"2em"}} disabled={processing} color="secondary" variant='contained' onClick={handleApply}>Apply Changes</Button>
         </>
     )
 }
