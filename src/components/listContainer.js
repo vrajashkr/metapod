@@ -102,6 +102,7 @@ export default function ListContainer(props){
 		fetch("/api/v1/containers/"+container.Name).then(
 			response =>{
 				response.json().then((data)=>{
+					data["CName"] = container.Name;
 					setModalData(data);
 					setDataReady(true);
 				})
