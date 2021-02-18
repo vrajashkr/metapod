@@ -6,6 +6,7 @@ from flask_bcrypt import Bcrypt
 import docker
 import inspect
 import pprint
+import json
 
 app = Flask(__name__)
 api = Api(app)
@@ -182,8 +183,9 @@ class Image(Resource):
 
 class Resources(Resource):
     def post(self, name):
-        cpu_quota = request.form['CpuQuota']
-        mem_limit = request.form['Memory']
+        data = json.loads(request.data.decode("utf-8"))
+        cpu_quota = data['CpuQuota']
+        mem_limit = data['Memory']
         client = docker.from_env()
         cont = client.containers.get(name)
         cont.update(cpu_quota = cpu_quota, mem_limit = mem_limit)
@@ -191,7 +193,8 @@ class Resources(Resource):
 
 class Rules(Resource):
     def post(self, name):
-        rules = request.form['Rules']
+        data = json.loads(request.data.decode("utf-8"))
+        rules = data['Rules']
         rule_action = {
             'Drop NET_RAW': cap_handler('NET_RAW'), 
             'Drop MKNOD': cap_handler('MKNOD')
@@ -206,7 +209,7 @@ def cap_handler(cap):
         cont = client.containers.get(name)
         cpu_quota = cont.attrs['HostConfig']['CpuQuota']
         mem_limit = cont.attrs['HostConfig']['Memory']
-        ports = cont.attrs['Config']['ExposedPorts']
+        ports = cont.ports
         image = cont.attrs['Config']['Image']
 
         if checked:
@@ -217,7 +220,7 @@ def cap_handler(cap):
             cap_drop = []
             if cont.attrs['HostConfig']['CapDrop']:
                 cap_drop = list(set(cont.attrs['HostConfig']['CapDrop']) - {cap})
-
+        cont.stop()
         cont.remove()
         client.containers.run(image = image, name = name, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports)
     return particular_cap_handler
