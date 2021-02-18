@@ -65,8 +65,8 @@ export default function ChangeContainerResourceAlloc(props){
         let cpu = parseFloat(document.getElementById("cpualloc").value) * 100000;
         let mem = parseInt(document.getElementById("memalloc").value) * 1024 * 1024;
 
-        dataJSON["CpuQuota"] = isNaN(cpu) ? 0 : 200000;
-        dataJSON["Memory"] = isNaN(mem) ? 500000000 : mem;
+        dataJSON["CpuQuota"] = isNaN(cpu) ? 0 : cpu;
+        dataJSON["Memory"] = isNaN(mem) ? 0 : mem;
         
         setProcessing(true);
         console.log(dataJSON);
