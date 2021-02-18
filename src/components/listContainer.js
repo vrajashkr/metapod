@@ -120,7 +120,6 @@ export default function ListContainer(props){
 		setDataReady(false);
 		setSyncing(true);
 		makeContainerDataRequest(container);
-		setCurrentViewIndex(0);
 	}
 
 	const getView = (source, index) => {
