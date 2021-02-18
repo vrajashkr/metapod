@@ -220,9 +220,26 @@ def cap_handler(cap):
             cap_drop = []
             if cont.attrs['HostConfig']['CapDrop']:
                 cap_drop = list(set(cont.attrs['HostConfig']['CapDrop']) - {cap})
+
+        cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+
+        db = cluster["metapod"]
+        collection = db["rules"]
+
+        entry = {
+            'type' : "container",
+            'name' : name,
+            'cpu_quota' : cpu_quota,
+            'memory_limit' : mem_limit,
+            'cap_drop' : cap_drop
+        }
+
+        collection.replace_one({'type': 'container', 'name': name}, entry, upsert=True)
+
         cont.stop()
         cont.remove()
         client.containers.run(image = image, name = name, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports)
+
     return particular_cap_handler
 
 api.add_resource(Register, '/api/v1/register')
