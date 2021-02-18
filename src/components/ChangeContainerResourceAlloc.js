@@ -37,7 +37,7 @@ export default function ChangeContainerResourceAlloc(props){
                     <TextField
                             label="CPU Allocation"
                             variant="standard"
-                            value={currentCPUValue}
+                            defaultValue={currentCPUValue}
                             id="cpualloc"
                     />
                 ],
@@ -46,7 +46,7 @@ export default function ChangeContainerResourceAlloc(props){
                     <TextField
                             label="Memory Allocation"
                             variant="standard"
-                            value={currentMemoryValue}
+                            defaultValue={currentMemoryValue}
                             id="memalloc"
                     />
                 ]
