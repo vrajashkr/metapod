@@ -1,4 +1,4 @@
-import { TextField, Typography, Button } from '@material-ui/core';
+import { TextField, Typography, Button, Grid, CircularProgress } from '@material-ui/core';
 import React from 'react'
 import ResourceDataSection from './ResourceDataSection';
 import Paper from '@material-ui/core/Paper';
@@ -113,7 +113,20 @@ export default function ChangeContainerResourceAlloc(props){
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button style={{marginTop:"2em"}} disabled={processing} color="secondary" variant='contained' onClick={handleApply}>Apply Changes</Button>
+            <Grid container alignItems="center" justify="center" direction="column" spacing={3}>
+                <Grid item xs={12}>
+                    <Button style={{marginTop:"2em"}} disabled={processing} color="secondary" variant='contained' onClick={handleApply}>Apply Changes</Button>
+                </Grid>
+                {
+                    processing 
+                    ?
+                    <Grid item xs={12}> 
+                        <CircularProgress/> 
+                    </Grid>
+                    : 
+                    <></>
+                }
+            </Grid>
         </>
     )
 }
