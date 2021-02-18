@@ -34,6 +34,7 @@ import StorageIcon from '@material-ui/icons/Storage';
 import EditIcon from '@material-ui/icons/Edit';
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import SyncIcon from '@material-ui/icons/Sync';
 
 const drawerWidth = 240;
 
@@ -80,6 +81,7 @@ export default function ListContainer(props){
 	const [open, setOpen] = React.useState(false);
 	const [dataReady, setDataReady] = React.useState(false);
 	const [modalData, setModalData] = React.useState({});
+	const [syncing, setSyncing] = React.useState(false);
 	const [currentViewIndex, setCurrentViewIndex] = React.useState(0);
 	
 	const location = () => {
@@ -96,18 +98,29 @@ export default function ListContainer(props){
 		setCurrentViewIndex(0);
 	}
 
-	const handleOpen = (container) => {
-		setModalData(container);
-		setOpen(true);
+	const makeContainerDataRequest = (container) => {
 		fetch("/api/v1/containers/"+container.Name).then(
 			response =>{
 				response.json().then((data)=>{
 					data["CName"] = container.Name;
 					setModalData(data);
 					setDataReady(true);
+					setSyncing(false);
 				})
 			}
 		)
+	}
+
+	const handleOpen = (container) => {
+		setOpen(true);
+		makeContainerDataRequest(container);
+	}
+
+	const handleSync = (container) => {
+		setDataReady(false);
+		setSyncing(true);
+		makeContainerDataRequest(container);
+		setCurrentViewIndex(0);
 	}
 
 	const getView = (source, index) => {
@@ -180,14 +193,14 @@ export default function ListContainer(props){
 				<AppBar className={styles.appBar}>
 				<Toolbar>
 					<IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-					<CloseIcon />
+						<CloseIcon />
 					</IconButton>
 					<Typography variant="h6" className={styles.title}>
 						Container: {modalData["Name"]}
 					</Typography>
-					<Button autoFocus color="inherit" onClick={handleClose}>
-						save
-					</Button>
+					<IconButton disabled={syncing} edge="end" color="inherit" onClick={() => {handleSync(modalData)}} aria-label="sync">
+						<SyncIcon/>
+					</IconButton>
 				</Toolbar>
 				</AppBar>
 				<Drawer
