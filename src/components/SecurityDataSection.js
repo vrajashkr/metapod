@@ -55,6 +55,24 @@ const securityDataMapper = (source) => {
                     source["HostConfig"]["IpcMode"]
                 }
             </Typography>
+        ],
+        [
+            "Dropped Capabilities",
+            <List>
+                {
+                    source["HostConfig"]["CapDrop"] === undefined || source["HostConfig"]["CapDrop"] === null
+                    ?
+                    "N/A"
+                    :
+                    source["HostConfig"]["CapDrop"].map(cap =>
+                        <ListItem>
+                            <Typography>
+                                {cap}
+                            </Typography>
+                        </ListItem>    
+                    )
+                }
+            </List>
         ]
     ]
     return securityStructuresMapper;
