@@ -1,4 +1,4 @@
-import { TextField, Typography, Button, Grid, CircularProgress } from '@material-ui/core';
+import { TextField, Typography, Button, Grid, CircularProgress, Snackbar } from '@material-ui/core';
 import React from 'react'
 import ResourceDataSection from './ResourceDataSection';
 import Paper from '@material-ui/core/Paper';
@@ -7,6 +7,11 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableRow from '@material-ui/core/TableRow';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 export default function ChangeContainerResourceAlloc(props){
 
@@ -81,8 +86,25 @@ export default function ChangeContainerResourceAlloc(props){
         .then((response) => { 
             console.log(response)
             setProcessing(false);
+            if (response.status === 200){
+                handleSnackOpen("Success!", "success");
+            }else{
+                handleSnackOpen("An error has occurred!", "error");
+            }
         });
         
+    }
+    const [snackOpen, setSnackOpen] = React.useState(false);
+    const [snackMessage, setSnackMessage] = React.useState("");
+    const [snackSeverity, setSnackSeverity] = React.useState("");
+    
+    const handleSnackOpen= (message, severity) => {
+        setSnackMessage(message);
+        setSnackSeverity(severity);
+        setSnackOpen(true);
+        setTimeout(() => {
+            setSnackOpen(false);
+        }, 5000);
     }
 
     return(
@@ -127,6 +149,11 @@ export default function ChangeContainerResourceAlloc(props){
                     <></>
                 }
             </Grid>
+            <Snackbar open={snackOpen} anchorOrigin={{"vertical": "top", "horizontal":"right" }}>
+                <Alert severity={snackSeverity}>
+                    {snackMessage}
+                </Alert>
+            </Snackbar>
         </>
     )
 }

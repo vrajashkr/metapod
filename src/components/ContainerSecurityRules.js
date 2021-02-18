@@ -1,4 +1,4 @@
-import { TableRow, TableHead, Button, Typography, Checkbox, CircularProgress, Grid } from '@material-ui/core';
+import { TableRow, TableHead, Button, Typography, Checkbox, CircularProgress, Grid, Snackbar } from '@material-ui/core';
 import React from 'react';
 import SecurityRules from './SecurityRules';
 import Paper from '@material-ui/core/Paper';
@@ -6,7 +6,11 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
+import MuiAlert from '@material-ui/lab/Alert';
 
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 export default function ContainerSecurityRules(props){
 
@@ -71,8 +75,27 @@ export default function ContainerSecurityRules(props){
 
             console.log(response);
             setProcessing(false);
+            if (response.status === 200){
+                handleSnackOpen("Success!", "success");
+            }else{
+                handleSnackOpen("An error has occurred!", "error");
+            }
         });
     };
+
+    const [snackOpen, setSnackOpen] = React.useState(false);
+    const [snackMessage, setSnackMessage] = React.useState("");
+    const [snackSeverity, setSnackSeverity] = React.useState("");
+    
+    const handleSnackOpen= (message, severity) => {
+        setSnackMessage(message);
+        setSnackSeverity(severity);
+        setSnackOpen(true);
+        setTimeout(() => {
+            setSnackOpen(false);
+        }, 5000);
+    }
+
 
     return (
         <>
@@ -136,6 +159,11 @@ export default function ContainerSecurityRules(props){
                 <></>
             }
         </Grid>
+        <Snackbar open={snackOpen} anchorOrigin={{"vertical": "top", "horizontal":"right" }}>
+                <Alert severity={snackSeverity}>
+                    {snackMessage}
+                </Alert>
+        </Snackbar>
         </>
     );
 }
