@@ -10,13 +10,29 @@ import TableContainer from '@material-ui/core/TableContainer';
 
 export default function ContainerSecurityRules(props){
 
-    const [applied, setApplied] = React.useState(Array(SecurityRules.length).fill(false));
+    const findAppliedRules = (droppedCapabilities) => {
+        let appliedRules = Array(SecurityRules.length).fill(false);
+
+        if (!(droppedCapabilities === undefined || droppedCapabilities === null)){
+
+            for (let i = 0; i < SecurityRules.length; i++){
+                if (droppedCapabilities.includes(SecurityRules[i]["key"])){
+                    // that capability has been dropped meaning the rule has been applied
+                    appliedRules[i] = true;
+                }
+            }
+        }
+
+        return appliedRules;
+    }
+
+    const [applied, setApplied] = React.useState(findAppliedRules(props.modaldata["HostConfig"]["CapDrop"]));
 
     const tableHeadings = [
         "Index",
         "Rule",
         "Description",
-        "Enabled?",
+        "Drop?",
     ]
 
     const handleChange = (index) => {

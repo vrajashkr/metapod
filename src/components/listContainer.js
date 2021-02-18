@@ -118,7 +118,7 @@ export default function ListContainer(props){
 			<ResourceDataSection modaldata={source} styles={styles}/>,
 			<MountedStorageDataSection modaldata={source} styles={styles}/>,
 			<ChangeContainerResourceAlloc modaldata={source} styles={styles}/>,
-			<ContainerSecurityRules styles={styles}/>
+			<ContainerSecurityRules styles={styles} modaldata={source}/>
 		]
 		return views[index];
 	}
