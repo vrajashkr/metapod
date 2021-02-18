@@ -99,7 +99,7 @@ export default function ListContainer(props){
 	const handleOpen = (container) => {
 		setModalData(container);
 		setOpen(true);
-		fetch("/api/v1/containers/"+container.ContainerId).then(
+		fetch("/api/v1/containers/"+container.Name).then(
 			response =>{
 				response.json().then((data)=>{
 					setModalData(data);
