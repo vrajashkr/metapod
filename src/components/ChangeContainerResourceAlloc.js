@@ -91,6 +91,10 @@ export default function ChangeContainerResourceAlloc(props){
             }else{
                 handleSnackOpen("An error has occurred!", "error");
             }
+        }).catch(error => {
+            console.log(error);
+            setProcessing(false);
+            handleSnackOpen("A next-level error has occurred", "error");
         });
         
     }

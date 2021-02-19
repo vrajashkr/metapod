@@ -71,7 +71,7 @@ export default function ContainerSecurityRules(props){
             },
             body: JSON.stringify(dataJSON)
 
-        }).then( (response) => { 
+        }).then((response) => { 
 
             console.log(response);
             setProcessing(false);
@@ -80,6 +80,11 @@ export default function ContainerSecurityRules(props){
             }else{
                 handleSnackOpen("An error has occurred!", "error");
             }
+
+        }).catch(error => {
+            console.log(error);
+            setProcessing(false);
+            handleSnackOpen("A next-level error has occurred", "error");
         });
     };
 
