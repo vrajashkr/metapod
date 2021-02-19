@@ -1,4 +1,4 @@
-Step 1: Build the image
+Step 1 : Build the image
 	docker build -t "image-name" .
 
 Step 2 : Create a container from the image

@@ -23,7 +23,8 @@ def get_necess_data(data, necess_attrs):
 
 class Register(Resource):
     def post(self):
-        cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+        # cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+        cluster = MongoClient('localhost', 27017)
 
         db = cluster["metapod"]
         collection = db["users"]
@@ -47,7 +48,8 @@ class Register(Resource):
 
 class Login(Resource):
     def post(self):
-        cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+        # cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+        cluster = MongoClient('localhost', 27017)
 
         db = cluster["metapod"]
         collection = db["users"]
@@ -74,13 +76,14 @@ class Containers(Resource):
         #CONTAINER ID   IMAGE     COMMAND                  CREATED       STATUS                   PORTS     NAMES
         #598079914e20   nginx     "/docker-entrypoint.…"   3 hours ago   Exited (0) 3 hours ago             zen_cerf
 
-        cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+        # cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+        cluster = MongoClient('localhost', 27017)
 
         db = cluster["metapod"]
-        collection = db["containers"]
+        contCollection = db["containers"]
 
-        if(collection.count_documents({}) != 0):
-            collection.delete_many({})
+        if(contCollection.count_documents({}) != 0):
+            contCollection.delete_many({})
 
         client = docker.from_env()
 
@@ -95,10 +98,22 @@ class Containers(Resource):
                 'Name': c.name
             }
 
-            collection.insert_one(entry)
+            contCollection.insert_one(entry)
 
+        rulesCollection = db["rules"]
+
+        allRules = []
         allContainers = []
-        for doc in collection.find({}):
+
+        if(rulesCollection.count_documents({}) != 0):
+            for doc in rulesCollection.find({}):
+                allRules.append(doc['name'])
+
+        for rule in allRules:
+            if(contCollection.find_one({'Name': rule}) is None):
+                rulesCollection.delete_one({'name' : rule}) 
+        
+        for doc in contCollection.find({}): 
             doc.pop('_id')
             allContainers.append(doc)
 
@@ -129,7 +144,8 @@ class Images(Resource):
         #REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
         #ubuntu       latest    f63181f19b2f   2 weeks ago   72.9MB
 
-        cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+        # cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+        cluster = MongoClient('localhost', 27017)
 
         db = cluster["metapod"]
         collection = db["images"]
@@ -221,7 +237,8 @@ def cap_handler(cap):
             if cont.attrs['HostConfig']['CapDrop']:
                 cap_drop = list(set(cont.attrs['HostConfig']['CapDrop']) - {cap})
 
-        cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+        # cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+        cluster = MongoClient('localhost', 27017)
 
         db = cluster["metapod"]
         collection = db["rules"]
