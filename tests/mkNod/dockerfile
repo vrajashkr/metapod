@@ -1,4 +1,4 @@
 FROM alpine
-WORKDIR WORKDIR /
+WORKDIR /
 COPY . .
 ENTRYPOINT ["/bin/sh", "./mknod.sh"]
