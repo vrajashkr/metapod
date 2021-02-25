@@ -44,7 +44,7 @@ class Dashboard extends Component {
 		   		response.json().then(data => {
                     console.log(data);
 		   			this.setState({allContainers : data.containers});
-		   			if (this.state.allContainers.length == 0){
+		   			if (data.containers.length === 0){
 		   				alert("No containers present on the host!");
 		   			}
 		   		})
@@ -60,7 +60,7 @@ class Dashboard extends Component {
                 response.json().then(data => {
                     console.log(data);
                     this.setState({allImages : data.images});
-                    if (this.state.allImages.length == 0){
+                    if (data.images.length === 0){
 		   				alert("No images present on the host!");
 		   			}
                 })
