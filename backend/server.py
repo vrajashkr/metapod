@@ -269,5 +269,5 @@ api.add_resource(Resources, '/api/v1/containers/<string:name>/resources')
 api.add_resource(Rules, '/api/v1/containers/<string:name>/rules')
 
 if __name__ == '__main__':
-    app.run(debug=True)
-    #app.run(host='0.0.0.0', port=80, debug=True)
+    #app.run(debug=True)
+    app.run(host='0.0.0.0', port=6969, debug=True)
