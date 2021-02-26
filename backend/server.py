@@ -259,6 +259,30 @@ def cap_handler(cap):
 
     return particular_cap_handler
 
+class Execution(Resource):
+    def get(self, name, command):
+        client = docker.from_env()
+        try:
+            cont = client.containers.get(name)
+        except e:
+            return {}, 400
+        
+        if (command == "start"):
+            cont.start()
+        elif (command == "stop"):
+            cont.stop()
+        return {}, 200
+
+class Logs(Resource):
+    def get(self, name):
+        client = docker.from_env()
+        try:
+            cont = client.containers.get(name)
+        except docker.errors.NotFound:
+            return {}, 400
+        return {"data":cont.logs().decode('utf-8')}, 200
+
+
 api.add_resource(Register, '/api/v1/register')
 api.add_resource(Login, '/api/v1/login')
 api.add_resource(Containers, '/api/v1/containers')
@@ -267,6 +291,8 @@ api.add_resource(Images, '/api/v1/images')
 api.add_resource(Image, '/api/v1/images/<string:id_or_name>')
 api.add_resource(Resources, '/api/v1/containers/<string:name>/resources')
 api.add_resource(Rules, '/api/v1/containers/<string:name>/rules')
+api.add_resource(Execution, '/api/v1/containers/<string:name>/execute/<string:command>')
+api.add_resource(Logs, '/api/v1/containers/<string:name>/logs')
 
 if __name__ == '__main__':
     #app.run(debug=True)

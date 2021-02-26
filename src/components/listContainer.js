@@ -19,6 +19,7 @@ import ResourceDataSection from './ResourceDataSection';
 import MountedStorageDataSection from './MountedStorageDataSection';
 import ChangeContainerResourceAlloc from './ChangeContainerResourceAlloc';
 import ContainerSecurityRules from './ContainerSecurityRules';
+import LogsSection from './containers/views/LogsSection';
 import Paper from '@material-ui/core/Paper';
 import ListItem from '@material-ui/core/ListItem';
 import List from '@material-ui/core/List';
@@ -35,6 +36,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import SyncIcon from '@material-ui/icons/Sync';
+import ListAltIcon from '@material-ui/icons/ListAlt';
+import ContainerState from './containers/actions/ContainerState';
 
 const drawerWidth = 240;
 
@@ -130,6 +133,7 @@ export default function ListContainer(props){
 			<SecurityDataSection modaldata={source} styles={styles}/>,
 			<ResourceDataSection modaldata={source} styles={styles}/>,
 			<MountedStorageDataSection modaldata={source} styles={styles}/>,
+			<LogsSection modaldata={source} styles={styles}/>,
 			<ChangeContainerResourceAlloc modaldata={source} styles={styles}/>,
 			<ContainerSecurityRules styles={styles} modaldata={source}/>
 		]
@@ -143,6 +147,7 @@ export default function ListContainer(props){
 		"Security Details",
 		"Resource Details",
 		"Mounted Storage Details",
+		"Container Logs",
 		"Change Resource Allocation",
 		"Security Rules"
 	]
@@ -191,15 +196,28 @@ export default function ListContainer(props){
 				<div className={styles.root}>
 				<AppBar className={styles.appBar}>
 				<Toolbar>
-					<IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
-						<CloseIcon />
-					</IconButton>
-					<Typography variant="h6" className={styles.title}>
-						Container: {modalData["Name"]}
-					</Typography>
+					<Grid container direction="row" justify="center" style={{width:"100%"}} alignItems="center">
+						<Grid item xs={1}>
+							<IconButton edge="start" color="inherit" onClick={handleClose} aria-label="close">
+								<CloseIcon />
+							</IconButton>
+						</Grid>
+						<Grid item xs={6}>
+							<Typography variant="h6" className={styles.title}>
+								Container: {modalData["Name"]}
+							</Typography>
+						</Grid>
+						<Grid item xs={5}>
+							<Grid item>
+								<ContainerState modaldata={modalData}/>
+							</Grid>
+						</Grid>
+					</Grid>
+					
 					<IconButton disabled={syncing} edge="end" color="inherit" onClick={() => {handleSync(modalData)}} aria-label="sync">
 						<SyncIcon/>
 					</IconButton>
+			
 				</Toolbar>
 				</AppBar>
 				<Drawer
@@ -212,7 +230,7 @@ export default function ListContainer(props){
 					<Toolbar />
 					<div className={styles.drawerContainer}>
 					<List>
-						{[['Container Details',<InfoIcon/>], ['Network Details',<DnsIcon/> ], ['Security Details', <SecurityIcon/>], ['Resource Details', <MemoryIcon/>], ['Mounted Storage Details',<StorageIcon/>]].map((entry,index) => (
+						{[['Container Details',<InfoIcon/>], ['Network Details',<DnsIcon/> ], ['Security Details', <SecurityIcon/>], ['Resource Details', <MemoryIcon/>], ['Mounted Storage Details',<StorageIcon/>], ['Container Logs',<ListAltIcon/>]].map((entry,index) => (
 						<ListItem button key={entry[0]} onClick={()=>{setCurrentViewIndex(index+1)}}>
 							<ListItemIcon>{entry[1]}</ListItemIcon>
 							<ListItemText primary={entry[0]} />
@@ -222,7 +240,7 @@ export default function ListContainer(props){
 					<Divider />
 					<List>
 						{['Change Resource Allocation', 'Apply Security Rules'].map((text, index) => (
-						<ListItem button key={text} onClick={()=>{setCurrentViewIndex(index+5+1)}}>
+						<ListItem button key={text} onClick={()=>{setCurrentViewIndex(index+5+2)}}>
 							<ListItemIcon><EditIcon/></ListItemIcon>
 							<ListItemText primary={text} />
 						</ListItem>
