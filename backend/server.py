@@ -252,10 +252,13 @@ def cap_handler(cap):
         }
 
         collection.replace_one({'type': 'container', 'name': name}, entry, upsert=True)
-
-        cont.stop()
-        cont.remove()
-        client.containers.run(image = image, name = name, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, detach=True)
+        if (cont.status == "running"):
+            cont.stop()
+            cont.remove()
+            client.containers.run(image = image, name = name, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, detach=True)
+        else:
+            cont.remove()
+            client.containers.create(image = image, name = name, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports)
 
     return particular_cap_handler
 
@@ -264,13 +267,16 @@ class Execution(Resource):
         client = docker.from_env()
         try:
             cont = client.containers.get(name)
-        except e:
+        except:
             return {}, 400
         
-        if (command == "start"):
-            cont.start()
-        elif (command == "stop"):
-            cont.stop()
+        try:
+            if (command == "start"):
+                cont.start()
+            elif (command == "stop"):
+                cont.stop()
+        except:
+            return {}, 500
         return {}, 200
 
 class Logs(Resource):
