@@ -1,4 +1,7 @@
 FROM alpine
 WORKDIR /
 COPY . .
+RUN apk update
+RUN apk add dos2unix
+RUN dos2unix /mknod.sh
 ENTRYPOINT ["/bin/sh", "./mknod.sh"]

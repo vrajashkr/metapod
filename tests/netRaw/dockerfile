@@ -1,7 +1,7 @@
-FROM ubuntu
-WORKDIR /usr/src/app
+FROM alpine
+WORKDIR /
 COPY . .
-RUN apt-get update
-RUN apt-get install -y python3 python3-pip
+RUN apk update
+RUN apk add python3 py3-pip
 RUN pip3 install scapy
-ENTRYPOINT [ "/usr/bin/python3", "/usr/src/app/net-raw.py" ]
+ENTRYPOINT [ "python3", "/net-raw.py" ]
