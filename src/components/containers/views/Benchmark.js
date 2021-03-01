@@ -11,7 +11,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function Benchmark(props){
     const [running, setRunning] = React.useState(false);
-    const [output, setOutput] = React.useState(false);
+    const [output, setOutput] = React.useState("");
 
     const handleStartRun = () =>{
         setRunning(true);
