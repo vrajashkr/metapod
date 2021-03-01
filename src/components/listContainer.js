@@ -38,6 +38,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import SyncIcon from '@material-ui/icons/Sync';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import ContainerState from './containers/actions/ContainerState';
+import Benchmark from './containers/views/Benchmark';
 
 const drawerWidth = 240;
 
@@ -82,6 +83,7 @@ export default function ListContainer(props){
 	const styles = useStyles();
 
 	const [open, setOpen] = React.useState(false);
+	const [benchOpen, setBenchOpen] = React.useState(false);
 	const [dataReady, setDataReady] = React.useState(false);
 	const [modalData, setModalData] = React.useState({});
 	const [syncing, setSyncing] = React.useState(false);
@@ -99,6 +101,10 @@ export default function ListContainer(props){
 		setDataReady(false);
 		setModalData({});
 		setCurrentViewIndex(0);
+	}
+
+	const handleBenchClose = () => {
+		setBenchOpen(false);
 	}
 
 	const makeContainerDataRequest = (container) => {
@@ -163,7 +169,7 @@ export default function ListContainer(props){
 					><KeyboardBackspaceIcon fontSize="large"/></Link>
 				</nav>
 				<nav style={{height: "4em"}}>
-					<p style={{margin: "0 1.5em"}}>Click to refresh: <Button><RefreshIcon fontSize="large" onClick={props.update}/></Button></p>
+					<p style={{margin: "0 1.5em"}}>Click to refresh: <Button><RefreshIcon fontSize="large" onClick={props.update}/></Button><Button variant="contained" onClick={() => {setBenchOpen(true)}}>Docker Bench</Button></p>
 				</nav>
 				<br />
 				<div style={{marginLeft: "4.5em"}}>
@@ -260,6 +266,7 @@ export default function ListContainer(props){
 				</div>
 			}
 		</Dialog>
+		<Benchmark open={benchOpen} handleClose={handleBenchClose} styles={styles}/>
 		</>
 	);
 }

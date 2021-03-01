@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
 from pymongo import MongoClient
 from flask_bcrypt import Bcrypt
+from benchmark import Benchmark
 
 import docker
 import inspect
@@ -299,6 +300,7 @@ api.add_resource(Resources, '/api/v1/containers/<string:name>/resources')
 api.add_resource(Rules, '/api/v1/containers/<string:name>/rules')
 api.add_resource(Execution, '/api/v1/containers/<string:name>/execute/<string:command>')
 api.add_resource(Logs, '/api/v1/containers/<string:name>/logs')
+api.add_resource(Benchmark, '/api/v1/benchmark')
 
 if __name__ == '__main__':
     #app.run(debug=True)
