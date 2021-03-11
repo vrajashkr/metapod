@@ -8,7 +8,7 @@ class Image extends Component {
 		return(
 			<div className="card">
 				<div>
-					<div className="card-header">{this.props.id}</div>
+					<div className="card-header">{this.props.name === "" ? this.props.id : this.props.name}</div>
 					<div className="card-body">
 						Tags: {this.props.tags}
 						<br />

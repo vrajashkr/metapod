@@ -95,7 +95,11 @@ export default function ListImage(props){
 
 	const handleOpen = (image) => {
 		setOpen(true);
-		fetch("/api/v1/images/"+image.ImageName).then(
+		let imageIdentifier = image.ImageName;
+		if (imageIdentifier === ""){
+			imageIdentifier = image.ImageId
+		}
+		fetch("/api/v1/images/"+imageIdentifier).then(
 			response => {
 				response.json().then(
 					data => {
@@ -137,6 +141,7 @@ export default function ListImage(props){
 								return <Image 
 											key = {i}
 											id = {img.ImageId}
+											name = {img.ImageName}
 											tags = {img.Tag}
 											repository = {img.Repository}
 											created = {img.Created}
@@ -162,7 +167,7 @@ export default function ListImage(props){
 						<CloseIcon />
 						</IconButton>
 						<Typography variant="h6" className={styles.title}>
-							Image: {modalData["Id"]}
+							Image: {modalData["ImageName"] === "" ? modalData["Id"]: modalData["ImageName"]}
 						</Typography>
 						<Button autoFocus color="inherit" onClick={handleClose}>
 							save
