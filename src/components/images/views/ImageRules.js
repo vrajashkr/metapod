@@ -32,12 +32,12 @@ export default function ImageRules(props){
                         if (Object.keys(dbRules).includes(Rules[i]["title"])){
                             // the rule has been applied
                             appliedRules[i] = true;
-                            appliedRuleData[i] = dbRules[Rules[i]["title"]];
+                            appliedRuleData[i] = JSON.stringify(dbRules[Rules[i]["title"]]);
                         }
                     }
                     setApplied(appliedRules);
-                    setAppliedData(appliedRuleData);
                     console.log(appliedRuleData);
+                    setAppliedData(appliedRuleData);
                     setFullDisable(false);
                 }
             })
