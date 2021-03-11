@@ -110,7 +110,7 @@ export default function ContainerSecurityRules(props){
                     <TableRow>
                         {
                             tableHeadings.map(heading =>
-                                <TableCell>
+                                <TableCell key={heading}>
                                     <Typography>
                                         {heading}
                                     </Typography>
@@ -122,7 +122,7 @@ export default function ContainerSecurityRules(props){
                 <TableBody>
                     {
                         SecurityRules.map((entry,index) =>
-                            <TableRow>
+                            <TableRow key={index}>
                                 <TableCell>
                                     <Typography>
                                         {index}

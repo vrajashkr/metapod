@@ -7,11 +7,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import ListItem from '@material-ui/core/ListItem';
-import List from '@material-ui/core/List';
-import ListItemText from '@material-ui/core/ListItemText';
-
-
 
 const mountDataMapper = {
     "Type" : "Type",
@@ -28,7 +23,7 @@ export default function MountedStorageDataSection(props){
                 <TableHead>
                     {
                         Object.keys(mountDataMapper).map(header => 
-                            <TableCell>
+                            <TableCell key={header}>
                                 <Typography>
                                     {header}
                                 </Typography>
@@ -38,11 +33,11 @@ export default function MountedStorageDataSection(props){
                 </TableHead>
                 <TableBody>
                     {
-                        props.modaldata["Mounts"].map(entry => 
-                            <TableRow>
+                        props.modaldata["Mounts"].map((entry,index) => 
+                            <TableRow key={index}>
                                 {
                                     Object.keys(mountDataMapper).map(header =>
-                                        <TableCell>
+                                        <TableCell key={header}>
                                             <Typography>
                                                 {
                                                     entry[mountDataMapper[header]] === undefined || entry[mountDataMapper[header]] === null

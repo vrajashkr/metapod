@@ -27,7 +27,7 @@ export default function ContainerDetailsSection(props){
                 <TableBody>
                     {
                         Object.keys(dataMapper).map(key =>
-                            <TableRow>
+                            <TableRow key={key}>
                                 <TableCell>
                                     <Typography>
                                         {key}

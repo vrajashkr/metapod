@@ -131,7 +131,7 @@ export default function ImageRules(props){
                     <TableRow>
                         {
                             tableHeadings.map(heading =>
-                                <TableCell>
+                                <TableCell key={heading}>
                                     <Typography>
                                         {heading}
                                     </Typography>
@@ -143,7 +143,7 @@ export default function ImageRules(props){
                 <TableBody>
                     {
                         Rules.map((entry,index) =>
-                            <TableRow>
+                            <TableRow key={index}>
                                 <TableCell>
                                     <Typography>
                                         {index}

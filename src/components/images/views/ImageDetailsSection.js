@@ -4,7 +4,6 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import ListItem from '@material-ui/core/ListItem';
@@ -161,7 +160,7 @@ export default function ImageDetailsSection(props){
                 <TableBody>
                     {
                         getStructureFromJSON(props.modaldata).map((entry) =>
-                            <TableRow>
+                            <TableRow key={entry[0]}>
                                 <TableCell>
                                     <Typography>
                                         {entry[0]}

@@ -82,7 +82,7 @@ const getNetworkDatafromJSON = (source, style) =>{
                                         </TableRow>	
                                         {
                                             Object.keys(specificNetworkDataMapper).map(key =>
-                                                <TableRow>
+                                                <TableRow key={key}>
                                                     <TableCell>
                                                         {key}
                                                     </TableCell>
@@ -117,7 +117,7 @@ export default function NetworkDetailsSection(props){
                 <TableBody>
                     {
                         getNetworkDatafromJSON(props.modaldata, props.styles).map((entry) =>
-                            <TableRow>
+                            <TableRow key={entry[0]}>
                                 <TableCell>
                                     <Typography>
                                         {entry[0]}

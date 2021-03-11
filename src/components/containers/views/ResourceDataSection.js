@@ -55,7 +55,7 @@ export default function ResourceDataSection(props){
                 <TableBody>
                     {
                         resourceDataMapper(props.modaldata).map((entry) =>
-                            <TableRow>
+                            <TableRow key={entry[0]}>
                                 <TableCell>
                                     <Typography>
                                         {entry[0]}
