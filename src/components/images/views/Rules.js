@@ -12,13 +12,6 @@ const Rules = [
                     id="healthcheckcmd"
                 />,
         "reader": () => {return {"healthCheckCmd" : document.getElementById("healthcheckcmd").value}}
-    },
-    {
-        "key": "fake",
-        "title": "This is a fake",
-        "desc": "This is a fake",
-        "data": "None",
-        "reader": () => {return "None"}
     }
  ];
  
