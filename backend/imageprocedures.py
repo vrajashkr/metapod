@@ -28,7 +28,7 @@ class ImageProcedures:
         
         dockerFile = BytesIO(dockerFileString.encode('utf-8'))
         try:
-            client.images.build(fileobj = dockerFile, tag = imageName)
+            client.images.build(fileobj = dockerFile, tag = imageName, forcerm = True)
         except docker.errors.BuildError:
             return Status(500, "Error", "Image Rebuild Failed")
         
