@@ -22,6 +22,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import ImageDetailsSection from './ImageDetailsSection';
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 import RefreshIcon from '@material-ui/icons/Refresh';
+import ImageRules from './images/views/ImageRules';
 
 const drawerWidth = 240;
 
@@ -72,7 +73,8 @@ export default function ListImage(props){
 	const getView = (source, index) => {
 		let data = [
 			<Typography>Select an Option to get started</Typography>,
-			<ImageDetailsSection modaldata={source} styles={styles}/>
+			<ImageDetailsSection modaldata={source} styles={styles}/>,
+			<ImageRules modaldata={source} styles={styles}/>,
 		]
 		return data[index];
 	}
@@ -93,10 +95,11 @@ export default function ListImage(props){
 
 	const handleOpen = (image) => {
 		setOpen(true);
-		fetch("/api/v1/images/"+image.ImageId).then(
+		fetch("/api/v1/images/"+image.ImageName).then(
 			response => {
 				response.json().then(
 					data => {
+						data["ImageName"] = data["RepoTags"][0] === undefined ? "":  data["RepoTags"][0];
 						setModalData(data);
 						setDataReady(true);
 					}
@@ -185,10 +188,10 @@ export default function ListImage(props){
 							</List>
 							<Divider />
 							<List>
-								{['Apply Security Rules'].map((text, index) => (
-								<ListItem button key={text}>
-									<ListItemIcon><EditIcon/></ListItemIcon>
-									<ListItemText primary={text} />
+								{[['Apply Rules',<EditIcon/>]].map((entry, index) => (
+								<ListItem button key={entry[0]} onClick={()=>{setCurrentViewIndex(index+1+1)}}>
+									<ListItemIcon>{entry[1]}</ListItemIcon>
+									<ListItemText primary={entry[0]} />
 								</ListItem>
 								))}
 							</List>

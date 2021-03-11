@@ -3,7 +3,8 @@ from flask_restful import Api, Resource
 from pymongo import MongoClient
 from flask_bcrypt import Bcrypt
 from benchmark import Benchmark
-
+from imageprocedures import ImageProcedures
+from imagerules import ImageRule
 import docker
 import inspect
 import pprint
@@ -12,6 +13,74 @@ import json
 app = Flask(__name__)
 api = Api(app)
 bcrypt = Bcrypt(app)
+
+
+imageRuleMap = {
+        "Apply HealthCheck": ImageRule("Apply HealthCheck",ImageProcedures.createHealthCheck, ["healthCheckCmd"], ImageProcedures.readHealthCheck)
+}
+
+def initializeCore():
+    print("[INFO] "+"Verifying Database Connectivity")
+    cluster = MongoClient('localhost', 27017)
+
+    db = cluster["metapod"]
+    contCollection = db["containers"]
+
+    if(contCollection.count_documents({}) != 0):
+        contCollection.delete_many({})
+
+    client = docker.from_env()
+
+    print("[INFO] "+ "Discovering Containers")
+    for c in client.containers.list(all = True):
+        entry = {
+            'ContainerId': c.short_id,
+            'Image': c.attrs['Config']['Image'],
+            'Command': c.attrs['Path'],
+            'Created': c.attrs['Created'],
+            'Status': c.status + ' (' + str(c.attrs['State']['ExitCode']) + ') at ' + c.attrs['State']['FinishedAt'],
+            'Ports': c.ports,
+            'Name': c.name
+        }
+
+        contCollection.insert_one(entry)
+    
+    print("[INFO] "+ "Discovering Images")
+    collection = db["images"]
+
+    if(collection.count_documents({}) != 0):
+        collection.delete_many({})
+
+    for i in client.images.list(all = True):
+        entry = {
+            'Repository': i.tags[0].split(':')[0] if i.tags else '',
+            'Tag': i.tags[0].split(':')[1] if i.tags else '',
+            'ImageId': i.short_id.split(':')[1],
+            'Created': i.attrs['Created'],
+            'Size': round(i.attrs['Size'] / 1000000, 1)
+        }
+
+        collection.insert_one(entry)
+    
+    collection = db["imageRules"]
+    if(collection.count_documents({}) != 0):
+        collection.delete_many({})
+
+    for i in client.images.list(all=False):
+        if (i.tags):
+            rules = dict()
+            for ruleKey in imageRuleMap:
+                ruleCheckOutput = imageRuleMap[ruleKey].readState(i.tags[0])
+                if (ruleCheckOutput[0] == True):
+                    rules[ruleKey] = ruleCheckOutput[1]
+            entry = {
+                'Tag': i.tags[0],
+                'Rules': rules
+            }
+            collection.insert_one(entry)
+
+    print("[INFO] "+ "Application Started")
+
 
 def get_necess_data(data, necess_attrs):
     return {
@@ -156,10 +225,11 @@ class Images(Resource):
 
         client = docker.from_env()
 
-        for i in client.images.list(all = True):
+        for i in client.images.list(all = False):
             entry = {
                 'Repository': i.tags[0].split(':')[0] if i.tags else '',
                 'Tag': i.tags[0].split(':')[1] if i.tags else '',
+                'ImageName': i.tags[0] if i.tags else '',
                 'ImageId': i.short_id.split(':')[1],
                 'Created': i.attrs['Created'],
                 'Size': round(i.attrs['Size'] / 1000000, 1)
@@ -289,6 +359,35 @@ class Logs(Resource):
             return {}, 400
         return {"data":cont.logs().decode('utf-8')}, 200
 
+class ImageRules(Resource):
+    def post(self, imageName):
+        data = json.loads(request.data.decode("utf-8"))
+        rulesToApply = data.get("Rules")
+        
+        for rule in rulesToApply:
+            if (rule["Checked"] == True and rule["RuleName"] in imageRuleMap):
+                matchingMapEntry = imageRuleMap[rule["RuleName"]]
+                args = []
+                for arg in matchingMapEntry.expectedArgs:
+                    args.append(rule["Args"].get(arg, None))
+
+                result = matchingMapEntry.apply(imageName, args)
+
+                if (result.status == 200):
+                    cluster = MongoClient('localhost', 27017)
+                    db = cluster["metapod"]
+                    collection = db["imageRules"]
+                    currentRules = collection.find_one({'Tag': imageName})['Rules']
+                    currentRules[rule["RuleName"]] = rule["Args"]
+                    collection.update_one({'Tag': imageName}, {'$set': {'Rules':currentRules}})
+        return {}, 200
+    
+    def get(self, imageName):
+        cluster = MongoClient('localhost', 27017)
+        db = cluster["metapod"]
+        collection = db["imageRules"]
+        currentRules = collection.find_one({'Tag': imageName})['Rules']
+        return {'data':currentRules}, 200
 
 api.add_resource(Register, '/api/v1/register')
 api.add_resource(Login, '/api/v1/login')
@@ -301,7 +400,9 @@ api.add_resource(Rules, '/api/v1/containers/<string:name>/rules')
 api.add_resource(Execution, '/api/v1/containers/<string:name>/execute/<string:command>')
 api.add_resource(Logs, '/api/v1/containers/<string:name>/logs')
 api.add_resource(Benchmark, '/api/v1/benchmark')
+api.add_resource(ImageRules, '/api/v1/images/<string:imageName>/rules')
 
 if __name__ == '__main__':
     #app.run(debug=True)
+    initializeCore()
     app.run(host='0.0.0.0', port=5000, debug=True)
