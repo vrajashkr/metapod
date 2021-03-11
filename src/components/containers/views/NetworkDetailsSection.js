@@ -9,7 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import ListItem from '@material-ui/core/ListItem';
 import List from '@material-ui/core/List';
-import getValuefromJSON from "../utils/getValuefromJSON";
+import getValuefromJSON from "../../../utils/getValuefromJSON";
 
 
 const specificNetworkDataMapper = {

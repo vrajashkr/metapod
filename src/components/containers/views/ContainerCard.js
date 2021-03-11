@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-class Image extends Component {
+class ContainerCard extends Component {
 	constructor(props){
 		super(props);
 	}
@@ -8,13 +8,11 @@ class Image extends Component {
 		return(
 			<div className="card">
 				<div>
-					<div className="card-header">{this.props.name === "" ? this.props.id : this.props.name}</div>
+					<div className="card-header">{this.props.name}</div>
 					<div className="card-body">
-						Tags: {this.props.tags}
+						Status: {this.props.status}
 						<br />
-						Repository: {this.props.repository}
-						<br />
-						Created : {this.props.created}
+						Image: {this.props.image}
 					</div>
 					<div className="card-footer">
 						<button className="btn red" onClick={this.props.clickAction}>More Info</button>
@@ -25,4 +23,4 @@ class Image extends Component {
 	}
 }
 
-export default Image;
+export default ContainerCard;

@@ -9,16 +9,16 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
-import Container from './container';
+import ContainerCard from './containers/views/ContainerCard';
 import Dashboard from './dashboard';
 import {CircularProgress, Grid} from '@material-ui/core';
-import ContainerDetailsSection from "./ContainerDetailsSection";
-import NetworkDetailsSection from './NetworkDetailsSection';
-import SecurityDataSection from './SecurityDataSection';
-import ResourceDataSection from './ResourceDataSection';
-import MountedStorageDataSection from './MountedStorageDataSection';
-import ChangeContainerResourceAlloc from './ChangeContainerResourceAlloc';
-import ContainerSecurityRules from './ContainerSecurityRules';
+import ContainerDetailsSection from "./containers/views/ContainerDetailsSection";
+import NetworkDetailsSection from './containers/views/NetworkDetailsSection';
+import SecurityDataSection from './containers/views/SecurityDataSection';
+import ResourceDataSection from './containers/views/ResourceDataSection';
+import MountedStorageDataSection from './containers/views/MountedStorageDataSection';
+import ChangeContainerResourceAlloc from './containers/views/ChangeContainerResourceAlloc';
+import ContainerSecurityRules from './containers/views/ContainerSecurityRules';
 import LogsSection from './containers/views/LogsSection';
 import Paper from '@material-ui/core/Paper';
 import ListItem from '@material-ui/core/ListItem';
@@ -177,7 +177,7 @@ export default function ListContainer(props){
 	    			gridTemplateColumns: 'repeat(3, 30em)', gridAutoRows: 'auto', gridGap: '1em'}}>
 						{
 							props.container_list.map((cont, i) => {
-								return <Container 
+								return <ContainerCard
 											key = {i}
 											id = {cont.ContainerId}
 											name = {cont.Name}

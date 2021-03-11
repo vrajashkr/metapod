@@ -9,7 +9,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Slide from '@material-ui/core/Slide';
-import Image from './image';
+import ImageCard from './images/views/ImageCard';
 import Dashboard from './dashboard';
 import { CircularProgress, Drawer } from '@material-ui/core';
 import ListItem from '@material-ui/core/ListItem';
@@ -19,7 +19,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Divider from '@material-ui/core/Divider';
 import InfoIcon from '@material-ui/icons/Info';
 import EditIcon from '@material-ui/icons/Edit';
-import ImageDetailsSection from './ImageDetailsSection';
+import ImageDetailsSection from './images/views/ImageDetailsSection';
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ImageRules from './images/views/ImageRules';
@@ -138,7 +138,7 @@ export default function ListImage(props){
 	    			gridTemplateColumns: 'repeat(3, 30rem)', gridAutoRows: 'auto', gridGap: '1em'}}>
 						{
 							props.image_list.map((img, i) => {
-								return <Image 
+								return <ImageCard 
 											key = {i}
 											id = {img.ImageId}
 											name = {img.ImageName}
