@@ -355,6 +355,9 @@ def cap_handler(cap):
         mem_limit = cont.attrs['HostConfig']['Memory']
         ports = cont.ports
         image = cont.attrs['Config']['Image']
+        security_opt = cont.attrs['HostConfig'].get('SecurityOpt', [])
+        restart_policy = cont.attrs["HostConfig"]["RestartPolicy"]
+        pids_limit = cont.attrs["HostConfig"]["PidsLimit"]
 
         if checked:
             cap_drop = [cap]
@@ -383,10 +386,10 @@ def cap_handler(cap):
         if (cont.status == "running"):
             cont.stop()
             cont.remove()
-            client.containers.run(image = image, name = name, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, detach=True)
+            client.containers.run(image = image, name = name, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, detach=True, security_opt=security_opt, restart_policy = restart_policy, pids_limit=pids_limit)
         else:
             cont.remove()
-            client.containers.create(image = image, name = name, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports)
+            client.containers.create(image = image, name = name, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, security_opt=security_opt, restart_policy = restart_policy, pids_limit=pids_limit)
 
     return particular_cap_handler
 

@@ -46,6 +46,8 @@ class ContainerProcedures:
         ports = cont.ports
         image = cont.attrs['Config']['Image']
         cap_drop = cont.attrs['HostConfig']['CapDrop']
+        restart_policy = cont.attrs["HostConfig"]["RestartPolicy"]
+        pids_limit = cont.attrs["HostConfig"]["PidsLimit"]
 
         cluster = MongoClient('localhost', 27017)
 
@@ -64,10 +66,10 @@ class ContainerProcedures:
         if (cont.status == "running"):
             cont.stop()
             cont.remove()
-            client.containers.run(image = image, name = containerName, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, detach=True, security_opt=opts)
+            client.containers.run(image = image, name = containerName, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, detach=True, security_opt=opts, restart_policy = restart_policy, pids_limit=pids_limit)
         else:
             cont.remove()
-            client.containers.create(image = image, name = containerName, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, security_opt=opts)
+            client.containers.create(image = image, name = containerName, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, security_opt=opts, restart_policy = restart_policy, pids_limit=pids_limit)
         return Status(200, "Ok", "Successfully updated security opts")
 
 
@@ -100,6 +102,7 @@ class ContainerProcedures:
         image = cont.attrs['Config']['Image']
         cap_drop = cont.attrs['HostConfig']['CapDrop']
         security_opt = cont.attrs['HostConfig'].get('SecurityOpt', [])
+        restart_policy = cont.attrs["HostConfig"]["RestartPolicy"]
 
         cluster = MongoClient('localhost', 27017)
 
@@ -118,10 +121,10 @@ class ContainerProcedures:
         if (cont.status == "running"):
             cont.stop()
             cont.remove()
-            client.containers.run(image = image, name = containerName, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, detach=True, security_opt=security_opt, pids_limit=pidLimit)
+            client.containers.run(image = image, name = containerName, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, detach=True, security_opt=security_opt, pids_limit=pidLimit, restart_policy = restart_policy)
         else:
             cont.remove()
-            client.containers.create(image = image, name = containerName, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, security_opt=security_opt, pids_limit=pidLimit)
+            client.containers.create(image = image, name = containerName, cap_drop = cap_drop, cpu_quota = cpu_quota, mem_limit = mem_limit, ports = ports, security_opt=security_opt, pids_limit=pidLimit, restart_policy = restart_policy)
         return Status(200, "Ok", "Successfully updated PIDs limit")
 
 
