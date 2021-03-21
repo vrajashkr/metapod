@@ -23,7 +23,8 @@ imageRuleMap = {
 
 containerRuleMap = { 
     "RestartPolicy": ContainerRule("Restart Policy", ContainerProcedures.applyRestartPolicy, ["policyName", "retryCount"], ContainerProcedures.readRestartPolicy),
-    "SecurityOpts": ContainerRule("Security Opts", ContainerProcedures.applySecurityOpts, ["opts"], ContainerProcedures.readSecurityOpts)
+    "SecurityOpts": ContainerRule("Security Opts", ContainerProcedures.applySecurityOpts, ["opts"], ContainerProcedures.readSecurityOpts),
+    "PidsLimit": ContainerRule("PidsLimit", ContainerProcedures.applyPidsLimit, ["limit"], ContainerProcedures.readPidsLimit)
 }
 
 def initializeCore():
@@ -223,7 +224,7 @@ class Container(Resource):
             'AppArmorProfile': [],
             'Config': ['Cmd', 'Entrypoint', 'ExposedPorts', 'Hostname', 'Image', 'User', 'Volumes', 'WorkingDir'],
             'Created': [],
-            'HostConfig': ['CapAdd', 'CapDrop', 'Cgroup', 'CgroupParent', 'CpuCount', 'CpuQuota', 'CpuShares', 'CpusetCpus', 'CpusetMems', 'DeviceCgroupRules', 'Devices', 'IOMaximumBandwidth', 'IOMaximumIOps', 'IpcMode', 'MaskedPaths', 'Memory', 'MemoryReservation', 'NetworkMode', 'PortBindings', 'Privileged', 'PublishAllPorts', 'ReadonlyPaths', 'ReadonlyRootfs', 'RestartPolicy', 'SecurityOpt'],
+            'HostConfig': ['CapAdd', 'CapDrop', 'Cgroup', 'CgroupParent', 'CpuCount', 'CpuQuota', 'CpuShares', 'CpusetCpus', 'CpusetMems', 'DeviceCgroupRules', 'Devices', 'IOMaximumBandwidth', 'IOMaximumIOps', 'IpcMode', 'MaskedPaths', 'Memory', 'MemoryReservation', 'NetworkMode', 'PortBindings', 'Privileged', 'PublishAllPorts', 'ReadonlyPaths', 'ReadonlyRootfs', 'RestartPolicy', 'SecurityOpt', 'PidsLimit'],
             'Id': [],
             'Image': [],
             'Mounts': [],

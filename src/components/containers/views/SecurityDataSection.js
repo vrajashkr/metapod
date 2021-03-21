@@ -91,6 +91,18 @@ const securityDataMapper = (source) => {
                     )
                 }
             </List>
+        ],
+        [
+            "PIDs Limit",
+            <Typography>
+                {
+                    source["HostConfig"]["PidsLimit"] === undefined || source["HostConfig"]["PidsLimit"] === null
+                    ?
+                    "Unlimited (-1)"
+                    :
+                    source["HostConfig"]["PidsLimit"]
+                }
+            </Typography>
         ]
     ]
     return securityStructuresMapper;

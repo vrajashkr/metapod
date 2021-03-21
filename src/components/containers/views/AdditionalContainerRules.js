@@ -32,6 +32,18 @@ const AdditionalContainerRules = [
                     id="secopt"
                 />,
         "reader": () => {return {"opts" : document.getElementById("secopt").value}}
+    },
+    {
+        "key": "PidsLimit",
+        "title": "PidsLimit",
+        "desc": "Apply PID Limit to the container and prevent fork bomb attacks",
+        "data": <TextField
+                    label="PIDs Limit"
+                    variant="standard"
+                    defaultValue="-1"
+                    id="pidlimit"
+                />,
+        "reader": () => {return {"limit" : document.getElementById("pidlimit").value}}
     }
 ]
 
