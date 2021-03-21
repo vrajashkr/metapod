@@ -73,6 +73,24 @@ const securityDataMapper = (source) => {
                     )
                 }
             </List>
+        ],
+        [
+            "Security Options",
+            <List>
+                {
+                    source["HostConfig"]["SecurityOpt"] === undefined || source["HostConfig"]["SecurityOpt"] === null
+                    ?
+                    "N/A"
+                    :
+                    source["HostConfig"]["SecurityOpt"].map(cap =>
+                        <ListItem>
+                            <Typography>
+                                {cap}
+                            </Typography>
+                        </ListItem>    
+                    )
+                }
+            </List>
         ]
     ]
     return securityStructuresMapper;

@@ -2,7 +2,7 @@ import {TextField} from '@material-ui/core';
 
 const AdditionalContainerRules = [
     {
-        "key": "Restart Policy",
+        "key": "RestartPolicy",
         "title": "RestartPolicy",
         "desc": "Apply a restart policy for the container",
         "data": <>
@@ -20,6 +20,18 @@ const AdditionalContainerRules = [
                 />
                 </>,
         "reader": () => {return {"policyName" : document.getElementById("policyName").value, "retryCount" : document.getElementById("retryCount").value}}
+    },
+    {
+        "key": "SecurityOpts",
+        "title": "SecurityOpts",
+        "desc": "Apply Security options to the container",
+        "data": <TextField
+                    label="Security Opt"
+                    variant="standard"
+                    defaultValue=""
+                    id="secopt"
+                />,
+        "reader": () => {return {"opts" : document.getElementById("secopt").value}}
     }
 ]
 
