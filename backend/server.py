@@ -5,10 +5,12 @@ from flask_bcrypt import Bcrypt
 from benchmark import Benchmark
 from imageprocedures import ImageProcedures
 from imagerules import ImageRule
+from containerrule import ContainerRule
 import docker
 import inspect
 import pprint
 import json
+from containerprocedures import ContainerProcedures
 
 app = Flask(__name__)
 api = Api(app)
@@ -17,6 +19,10 @@ bcrypt = Bcrypt(app)
 
 imageRuleMap = {
         "Apply HealthCheck": ImageRule("Apply HealthCheck",ImageProcedures.createHealthCheck, ["healthCheckCmd"], ImageProcedures.readHealthCheck)
+}
+
+containerRuleMap = { 
+    "RestartPolicy": ContainerRule("Restart Policy", ContainerProcedures.applyRestartPolicy, ["policyName", "retryCount"], ContainerProcedures.readRestartPolicy)
 }
 
 def initializeCore():
@@ -62,6 +68,7 @@ def initializeCore():
 
         collection.insert_one(entry)
     
+    print("[INFO] "+ "Discovering Image Rules")
     collection = db["imageRules"]
     if(collection.count_documents({}) != 0):
         collection.delete_many({})
@@ -78,6 +85,23 @@ def initializeCore():
                 'Rules': rules
             }
             collection.insert_one(entry)
+
+    print("[INFO] "+ "Discovering Container Rules")
+    collection = db["containerRules"]
+    if(collection.count_documents({}) != 0):
+        collection.delete_many({})
+
+    for i in client.containers.list(all=True):
+        rules = dict()
+        for ruleKey in containerRuleMap:
+            ruleCheckOutput = containerRuleMap[ruleKey].readState(i.name)
+            if (ruleCheckOutput[0] == True):
+                rules[ruleKey] = ruleCheckOutput[1]
+        entry = {
+            'Name': i.name,
+            'Rules': rules
+        }
+        collection.insert_one(entry)
 
     print("[INFO] "+ "Application Started")
 
@@ -198,7 +222,7 @@ class Container(Resource):
             'AppArmorProfile': [],
             'Config': ['Cmd', 'Entrypoint', 'ExposedPorts', 'Hostname', 'Image', 'User', 'Volumes', 'WorkingDir'],
             'Created': [],
-            'HostConfig': ['CapAdd', 'CapDrop', 'Cgroup', 'CgroupParent', 'CpuCount', 'CpuQuota', 'CpuShares', 'CpusetCpus', 'CpusetMems', 'DeviceCgroupRules', 'Devices', 'IOMaximumBandwidth', 'IOMaximumIOps', 'IpcMode', 'MaskedPaths', 'Memory', 'MemoryReservation', 'NetworkMode', 'PortBindings', 'Privileged', 'PublishAllPorts', 'ReadonlyPaths', 'ReadonlyRootfs'],
+            'HostConfig': ['CapAdd', 'CapDrop', 'Cgroup', 'CgroupParent', 'CpuCount', 'CpuQuota', 'CpuShares', 'CpusetCpus', 'CpusetMems', 'DeviceCgroupRules', 'Devices', 'IOMaximumBandwidth', 'IOMaximumIOps', 'IpcMode', 'MaskedPaths', 'Memory', 'MemoryReservation', 'NetworkMode', 'PortBindings', 'Privileged', 'PublishAllPorts', 'ReadonlyPaths', 'ReadonlyRootfs', 'RestartPolicy'],
             'Id': [],
             'Image': [],
             'Mounts': [],
@@ -284,11 +308,42 @@ class Rules(Resource):
         rules = data['Rules']
         rule_action = {
             'Drop NET_RAW': cap_handler('NET_RAW'), 
-            'Drop MKNOD': cap_handler('MKNOD')
+            'Drop MKNOD': cap_handler('MKNOD'),
+            'Drop DAC_OVERRIDE': cap_handler('DAC_OVERRIDE'),
         }
         for i in rules:
             rule_action[i['RuleName']](name, i['Checked'])
         return {}, 200
+
+class AdditionalContainerRules(Resource):
+    def post(self, containerName):
+        data = json.loads(request.data.decode("utf-8"))
+        rulesToApply = data.get("Rules")
+        
+        for rule in rulesToApply:
+            if (rule["Checked"] == True and rule["RuleName"] in containerRuleMap):
+                matchingMapEntry = containerRuleMap[rule["RuleName"]]
+                args = []
+                for arg in matchingMapEntry.expectedArgs:
+                    args.append(rule["Args"].get(arg, None))
+
+                result = matchingMapEntry.apply(containerName, args)
+
+                if (result.status == 200):
+                    cluster = MongoClient('localhost', 27017)
+                    db = cluster["metapod"]
+                    collection = db["containerRules"]
+                    currentRules = collection.find_one({'Name': containerName})['Rules']
+                    currentRules[rule["RuleName"]] = rule["Args"]
+                    collection.update_one({'Name': containerName}, {'$set': {'Rules':currentRules}})
+        return {}, 200
+
+    def get(self, containerName):
+        cluster = MongoClient('localhost', 27017)
+        db = cluster["metapod"]
+        collection = db["containerRules"]
+        currentRules = collection.find_one({'Name': containerName})['Rules']
+        return {'data':currentRules}, 200
 
 def cap_handler(cap):
     def particular_cap_handler(name, checked):
@@ -308,7 +363,7 @@ def cap_handler(cap):
             if cont.attrs['HostConfig']['CapDrop']:
                 cap_drop = list(set(cont.attrs['HostConfig']['CapDrop']) - {cap})
 
-        # cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
+        
         cluster = MongoClient('localhost', 27017)
 
         db = cluster["metapod"]
@@ -401,6 +456,7 @@ api.add_resource(Execution, '/api/v1/containers/<string:name>/execute/<string:co
 api.add_resource(Logs, '/api/v1/containers/<string:name>/logs')
 api.add_resource(Benchmark, '/api/v1/benchmark')
 api.add_resource(ImageRules, '/api/v1/images/<string:imageName>/rules')
+api.add_resource(AdditionalContainerRules, '/api/v1/containers/<string:containerName>/rules/additional')
 
 if __name__ == '__main__':
     #app.run(debug=True)

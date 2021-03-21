@@ -39,6 +39,7 @@ import SyncIcon from '@material-ui/icons/Sync';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import ContainerState from './containers/actions/ContainerState';
 import Benchmark from './containers/views/Benchmark';
+import AdditionalRulesSection from './containers/views/AdditionalRulesSection';
 
 const drawerWidth = 240;
 
@@ -141,7 +142,8 @@ export default function ListContainer(props){
 			<MountedStorageDataSection modaldata={source} styles={styles}/>,
 			<LogsSection modaldata={source} styles={styles}/>,
 			<ChangeContainerResourceAlloc modaldata={source} styles={styles}/>,
-			<ContainerSecurityRules styles={styles} modaldata={source}/>
+			<ContainerSecurityRules styles={styles} modaldata={source}/>,
+			<AdditionalRulesSection styles={styles} modaldata={source}/>
 		]
 		return views[index];
 	}
@@ -245,7 +247,7 @@ export default function ListContainer(props){
 					</List>
 					<Divider />
 					<List>
-						{['Change Resource Allocation', 'Apply Security Rules'].map((text, index) => (
+						{['Change Resource Allocation', 'Apply Security Rules', 'Additional Rules'].map((text, index) => (
 						<ListItem button key={text} onClick={()=>{setCurrentViewIndex(index+5+2)}}>
 							<ListItemIcon><EditIcon/></ListItemIcon>
 							<ListItemText primary={text} />

@@ -17,7 +17,8 @@ const dataMapper = {
     "Privileged": ["HostConfig","Privileged"],
     "Created Date": ["Created"],
     "Last Execution - Start": ["State","StartedAt"],
-    "Last Execution - Finished": ["State", "FinishedAt"]
+    "Last Execution - Finished": ["State", "FinishedAt"],
+    "Restart Policy": ["HostConfig", "RestartPolicy"]
 }
 
 export default function ContainerDetailsSection(props){
@@ -40,7 +41,7 @@ export default function ContainerDetailsSection(props){
                                             ?
                                             "N/A"
                                             :
-                                            getValuefromJSON(props.modaldata,dataMapper[key]).toString()
+                                            JSON.stringify(getValuefromJSON(props.modaldata,dataMapper[key]))
                                         }
                                     </Typography>
                                 </TableCell>
