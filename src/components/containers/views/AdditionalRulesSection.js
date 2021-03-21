@@ -14,6 +14,27 @@ function Alert(props) {
 
 export default function AdditionalRulesSection(props){
 
+    // Section for custom states and functions to support dropdowns
+    const [secopts, setSecOpts] = React.useState([]);
+    const [restartPolicy, setRestartPolicy] = React.useState("")
+
+    const handleSecOptsChange = (event) => {
+        let selected = event.target.value;
+        setSecOpts(selected);
+    }
+
+    const handleRestartPolicySelectChange = (event) => {
+        setRestartPolicy(event.target.value);
+    }
+
+    const execprops = {
+        'secopts': secopts,
+        'restartPolicy': restartPolicy,
+        'setSecOpts': handleSecOptsChange,
+        'setRestartPolicy': handleRestartPolicySelectChange,
+    }
+    //
+
     const [fullDisable, setFullDisable] = React.useState(true);
     const [applied, setApplied] = React.useState(Array(AdditionalContainerRules.length).fill(false));
     const [appliedData, setAppliedData] = React.useState(Array(AdditionalContainerRules.length).fill(""));
@@ -29,11 +50,7 @@ export default function AdditionalRulesSection(props){
                 if (response.status === 200){
                     let dbRules = data["data"];
                     for (let i = 0; i < AdditionalContainerRules.length; i++){
-                        if (Object.keys(dbRules).includes(AdditionalContainerRules[i]["title"])){
-                            // the rule has been applied
-                            appliedRules[i] = true;
-                            appliedRuleData[i] = JSON.stringify(dbRules[AdditionalContainerRules[i]["title"]]);
-                        }
+                        appliedRuleData[i] = JSON.stringify(dbRules[AdditionalContainerRules[i]["title"]]);   
                     }
                     setApplied(appliedRules);
                     console.log(appliedRuleData);
@@ -79,7 +96,7 @@ export default function AdditionalRulesSection(props){
         };
 
         for (let i = 0; i < AdditionalContainerRules.length; i++){
-            dataJSON["Rules"].push({"RuleName": AdditionalContainerRules[i].title, "Checked": applied[i], "Args": AdditionalContainerRules[i].reader()});
+            dataJSON["Rules"].push({"RuleName": AdditionalContainerRules[i].title, "Checked": applied[i], "Args": AdditionalContainerRules[i].reader(execprops)});
         }
 
         console.log(dataJSON);
@@ -162,7 +179,7 @@ export default function AdditionalRulesSection(props){
                                 <TableCell>
                                     <div>
                                         {
-                                            appliedData[index] === ""
+                                            appliedData[index] === "" || appliedData[index] === undefined
                                             ?
                                             "N/A"
                                             :
@@ -172,7 +189,7 @@ export default function AdditionalRulesSection(props){
                                 </TableCell>
                                 <TableCell>
                                     <div>
-                                        {entry["data"]}
+                                        {entry["data"](execprops)}
                                     </div>
                                 </TableCell>
                                 <TableCell>
@@ -182,6 +199,9 @@ export default function AdditionalRulesSection(props){
                                         disabled={fullDisable}
                                     />
                                 </TableCell>
+                                {/* <TableCell>
+                                    <Button onClick={() => entry["reader"](execprops)}>Test Reader</Button>
+                                </TableCell> */}
                             </TableRow>
                         )
                     }

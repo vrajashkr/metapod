@@ -38,8 +38,7 @@ class ContainerProcedures:
         except:
             return Status(400, "Invalid Request", "Container not found")
 
-        opts = []
-        opts.append(args[0])
+        opts = args[0]
 
         # Get container data
         cpu_quota = cont.attrs['HostConfig']['CpuQuota']
