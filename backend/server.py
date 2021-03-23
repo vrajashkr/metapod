@@ -177,6 +177,7 @@ class Containers(Resource):
 
         db = cluster["metapod"]
         contCollection = db["containers"]
+        containerRulesCollection = db["containerRules"]
 
         if(contCollection.count_documents({}) != 0):
             contCollection.delete_many({})
@@ -194,12 +195,39 @@ class Containers(Resource):
                 'Name': c.name
             }
 
+            if(containerRulesCollection.find_one({'Name': c.name}) is None):
+                rule_entry = {
+                    'Name': c.name,
+                    'Rules': {
+                        'RestartPolicy':{
+                            'Name': "",
+                            'on-failure': "",
+                            'MaximumRetryCount': ""
+                        },
+                        'SecurityOpts': [],
+                        'PidsLimit': {
+                            'limit': "-1"
+                        }
+                    }
+                }
+                containerRulesCollection.insert_one(rule_entry)
+
             contCollection.insert_one(entry)
+            
 
         rulesCollection = db["rules"]
 
         allRules = []
         allContainers = []
+        container_rules = []
+
+        if(containerRulesCollection.count_documents({}) != 0):
+            for doc in containerRulesCollection.find({}):
+                container_rules.append(doc['Name'])
+
+        for rule in container_rules:
+            if(contCollection.find_one({'Name': rule}) is None):
+                containerRulesCollection.delete_one({'Name' : rule}) 
 
         if(rulesCollection.count_documents({}) != 0):
             for doc in rulesCollection.find({}):
@@ -336,10 +364,9 @@ class AdditionalContainerRules(Resource):
                     db = cluster["metapod"]
                     collection = db["containerRules"]
                     currentRules = collection.find_one({'Name': containerName})['Rules']
+                    currentRules[rule["RuleName"]] = rule["Args"]
+                    collection.update_one({'Name': containerName}, {'$set': {'Rules':currentRules}})
 
-                    if(currentRules is not None):
-                        currentRules[rule["RuleName"]] = rule["Args"]
-                        collection.update_one({'Name': containerName}, {'$set': {'Rules':currentRules}})
 
         return {}, 200
 
