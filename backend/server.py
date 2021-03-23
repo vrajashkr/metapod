@@ -199,6 +199,11 @@ class Containers(Resource):
                 rule_entry = {
                     'Name': c.name,
                     'Rules': {
+                        "cpu_quota": 0,
+                        "memory_limit": 0,
+                        "cap_drop" : []
+                    },
+                    'AdditionalRules': {
                         'RestartPolicy':{
                             'Name': "",
                             'on-failure': "",
@@ -213,11 +218,7 @@ class Containers(Resource):
                 containerRulesCollection.insert_one(rule_entry)
 
             contCollection.insert_one(entry)
-            
 
-        rulesCollection = db["rules"]
-
-        allRules = []
         allContainers = []
         container_rules = []
 
@@ -228,14 +229,6 @@ class Containers(Resource):
         for rule in container_rules:
             if(contCollection.find_one({'Name': rule}) is None):
                 containerRulesCollection.delete_one({'Name' : rule}) 
-
-        if(rulesCollection.count_documents({}) != 0):
-            for doc in rulesCollection.find({}):
-                allRules.append(doc['name'])
-
-        for rule in allRules:
-            if(contCollection.find_one({'Name': rule}) is None):
-                rulesCollection.delete_one({'name' : rule}) 
         
         for doc in contCollection.find({}): 
             doc.pop('_id')
@@ -363,9 +356,9 @@ class AdditionalContainerRules(Resource):
                     cluster = MongoClient('localhost', 27017)
                     db = cluster["metapod"]
                     collection = db["containerRules"]
-                    currentRules = collection.find_one({'Name': containerName})['Rules']
+                    currentRules = collection.find_one({'Name': containerName})['AdditionalRules']
                     currentRules[rule["RuleName"]] = rule["Args"]
-                    collection.update_one({'Name': containerName}, {'$set': {'Rules':currentRules}})
+                    collection.update_one({'Name': containerName}, {'$set': {'AdditionalRules':currentRules}})
 
 
         return {}, 200
@@ -374,7 +367,7 @@ class AdditionalContainerRules(Resource):
         cluster = MongoClient('localhost', 27017)
         db = cluster["metapod"]
         collection = db["containerRules"]
-        currentRules = collection.find_one({'Name': containerName})['Rules']
+        currentRules = collection.find_one({'Name': containerName})['AdditionalRules']
         return {'data':currentRules}, 200
 
 def cap_handler(cap):
@@ -402,17 +395,16 @@ def cap_handler(cap):
         cluster = MongoClient('localhost', 27017)
 
         db = cluster["metapod"]
-        collection = db["rules"]
+        collection = db["containerRules"]
 
         entry = {
-            'type' : "container",
-            'name' : name,
             'cpu_quota' : cpu_quota,
             'memory_limit' : mem_limit,
             'cap_drop' : cap_drop
         }
 
-        collection.replace_one({'type': 'container', 'name': name}, entry, upsert=True)
+        collection.update({'Name': cont.name}, {'$set': {'Rules':entry}})
+
         if (cont.status == "running"):
             cont.stop()
             cont.remove()
