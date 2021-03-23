@@ -336,8 +336,11 @@ class AdditionalContainerRules(Resource):
                     db = cluster["metapod"]
                     collection = db["containerRules"]
                     currentRules = collection.find_one({'Name': containerName})['Rules']
-                    currentRules[rule["RuleName"]] = rule["Args"]
-                    collection.update_one({'Name': containerName}, {'$set': {'Rules':currentRules}})
+
+                    if(currentRules is not None):
+                        currentRules[rule["RuleName"]] = rule["Args"]
+                        collection.update_one({'Name': containerName}, {'$set': {'Rules':currentRules}})
+
         return {}, 200
 
     def get(self, containerName):
