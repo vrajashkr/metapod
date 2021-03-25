@@ -265,10 +265,11 @@ class Images(Resource):
         cluster = MongoClient('localhost', 27017)
 
         db = cluster["metapod"]
-        collection = db["images"]
+        imagesCollection = db["images"]
+        imageRulesCollection = db["imageRules"]
 
-        if(collection.count_documents({}) != 0):
-            collection.delete_many({})
+        if(imagesCollection.count_documents({}) != 0):
+            imagesCollection.delete_many({})
 
         client = docker.from_env()
 
@@ -282,10 +283,29 @@ class Images(Resource):
                 'Size': round(i.attrs['Size'] / 1000000, 1)
             }
 
-            collection.insert_one(entry)
+            img_str = entry['Repository'] + ':' + entry['Tag']
+
+            if(imageRulesCollection.find_one({'Tag': img_str}) is None):
+                rule_entry = {
+                    'Tag': img_str,
+                    'Rules': {}
+                }
+                imageRulesCollection.insert_one(rule_entry)
+
+            imagesCollection.insert_one(entry)
 
         allImages = []
-        for doc in collection.find({}):
+        image_rules = []
+
+        if(imageRulesCollection.count_documents({}) != 0):
+            for doc in imageRulesCollection.find({}):
+                image_rules.append(doc['Tag'])
+
+        for rule in image_rules:
+            if(imagesCollection.find_one({'Repository': rule.split(':')[0], 'Tag': rule.split(':')[1]}) is None):
+                imageRulesCollection.delete_one({'Tag' : rule}) 
+
+        for doc in imagesCollection.find({}):
             doc.pop('_id')
             allImages.append(doc)
 
