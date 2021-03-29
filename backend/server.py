@@ -25,7 +25,7 @@ containerRuleMap = {
     "RestartPolicy": ContainerRule("Restart Policy", ContainerProcedures.applyRestartPolicy, ["policyName", "retryCount"], ContainerProcedures.readRestartPolicy),
     "SecurityOpts": ContainerRule("Security Opts", ContainerProcedures.applySecurityOpts, ["opts"], ContainerProcedures.readSecurityOpts),
     "PidsLimit": ContainerRule("PidsLimit", ContainerProcedures.applyPidsLimit, ["limit"], ContainerProcedures.readPidsLimit)
-}
+} 
 
 def initializeCore():
     print("[INFO] "+"Verifying Database Connectivity")
@@ -39,6 +39,8 @@ def initializeCore():
 
     client = docker.from_env()
 
+    containerCapRuleMap = dict()
+
     print("[INFO] "+ "Discovering Containers")
     for c in client.containers.list(all = True):
         entry = {
@@ -51,7 +53,17 @@ def initializeCore():
             'Name': c.name
         }
 
+        name = c.name
+        capRuleEntry = {
+            "cpu_quota" : c.attrs['HostConfig']['CpuQuota'],
+            "mem_limit" : c.attrs['HostConfig']['Memory'],
+            "cap_drop" : c.attrs['HostConfig']['CapDrop']
+        }
+        containerCapRuleMap.update({name: capRuleEntry})
+
         contCollection.insert_one(entry)
+
+    # print(containerCapRuleMap)
     
     print("[INFO] "+ "Discovering Images")
     collection = db["images"]
@@ -91,17 +103,19 @@ def initializeCore():
     print("[INFO] "+ "Discovering Container Rules")
     collection = db["containerRules"]
     if(collection.count_documents({}) != 0):
-        collection.delete_many({})
+        collection.delete_many({})        
 
     for i in client.containers.list(all=True):
+        additionalRules = dict()
         rules = dict()
         for ruleKey in containerRuleMap:
             ruleCheckOutput = containerRuleMap[ruleKey].readState(i.name)
             if (ruleCheckOutput[0] == True):
-                rules[ruleKey] = ruleCheckOutput[1]
+                additionalRules[ruleKey] = ruleCheckOutput[1]
         entry = {
             'Name': i.name,
-            'Rules': rules
+            'AdditionalRules': additionalRules,
+            'Rules': containerCapRuleMap[i.name]
         }
         collection.insert_one(entry)
 
