@@ -356,7 +356,7 @@ class Resources(Resource):
         mem_limit = data['Memory']
         client = docker.from_env()
         cont = client.containers.get(name)
-        cont.update(cpu_quota = cpu_quota, mem_limit = mem_limit)
+        cont.update(cpu_quota = cpu_quota, mem_limit = mem_limit, memswap_limit=-1)
         return {}, 200
 
 class Rules(Resource):
