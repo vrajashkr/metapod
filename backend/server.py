@@ -3,6 +3,7 @@ from flask_restful import Api, Resource
 from pymongo import MongoClient
 from flask_bcrypt import Bcrypt
 from benchmark import Benchmark
+from imageScan import ImageScan
 from imageprocedures import ImageProcedures
 from imagerules import ImageRule
 from containerrule import ContainerRule
@@ -516,6 +517,7 @@ api.add_resource(Rules, '/api/v1/containers/<string:name>/rules')
 api.add_resource(Execution, '/api/v1/containers/<string:name>/execute/<string:command>')
 api.add_resource(Logs, '/api/v1/containers/<string:name>/logs')
 api.add_resource(Benchmark, '/api/v1/benchmark')
+api.add_resource(ImageScan, '/api/v1/imagescan')
 api.add_resource(ImageRules, '/api/v1/images/<string:imageName>/rules')
 api.add_resource(AdditionalContainerRules, '/api/v1/containers/<string:containerName>/rules/additional')
 

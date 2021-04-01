@@ -23,6 +23,7 @@ import ImageDetailsSection from './images/views/ImageDetailsSection';
 import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import ImageRules from './images/views/ImageRules';
+import ImageScan from './images/views/ImageScan';
 
 const drawerWidth = 240;
 
@@ -65,6 +66,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 export default function ListImage(props){
 
 	const [open, setOpen] = React.useState(false);
+	const [imgScanOpen, setImgScanOpen] = React.useState(false);
 	const [modalData, setModalData] = React.useState({});
 	const [dataReady, setDataReady] = React.useState(false);
 	const [currentViewIndex, setCurrentViewIndex] = React.useState(0);
@@ -91,6 +93,10 @@ export default function ListImage(props){
 		setModalData({});
 		setDataReady(false);
 		setCurrentViewIndex(0);
+	}
+
+	const handleImgScanClose = () => {
+		setImgScanOpen(false);
 	}
 
 	const handleOpen = (image) => {
@@ -130,7 +136,7 @@ export default function ListImage(props){
 					><KeyboardBackspaceIcon fontSize="large"/></Link>
 				</nav>
 				<nav style={{height: "4em"}}>
-					<p style={{margin: "0 1.5em"}}>Click to refresh: <Button><RefreshIcon fontSize="large" onClick={props.update}/></Button></p>
+					<p style={{margin: "0 1.5em"}}>Click to refresh: <Button><RefreshIcon fontSize="large" onClick={props.update}/></Button><Button variant="contained" onClick={() => {setImgScanOpen(true)}}>Snyk Img Vuln Scan</Button></p>
 				</nav>
 				<br />
 				<div style={{marginLeft: "60px"}}>
@@ -215,7 +221,7 @@ export default function ListImage(props){
 			}
 			
 		</Dialog>
-
+		<ImageScan open={imgScanOpen} handleClose={handleImgScanClose} styles={styles}/>
 		</>
 	);
 }

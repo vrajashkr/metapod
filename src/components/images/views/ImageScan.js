@@ -9,14 +9,14 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function Benchmark(props){
+export default function ImageScan(props){
     const [running, setRunning] = React.useState(false);
     const [output, setOutput] = React.useState("");
 
     const handleStartRun = () =>{
         setRunning(true);
         setOutput("");
-        fetch("/api/v1/benchmark", {
+        fetch("/api/v1/imagescan", {
             method: "get"
         }).then(response => {
             response.json().then(result => {
@@ -27,7 +27,7 @@ export default function Benchmark(props){
     }
 
     const handleDownload = () => {
-        download(output, "benchmark.txt", "text/plain");
+        download(output, "image-vuln.txt", "text/plain");
     }
 
     return(
@@ -36,7 +36,7 @@ export default function Benchmark(props){
                     <AppBar className={props.styles.appBar}>
                         <Toolbar>
                             <Typography>
-                                Docker Security Benchmark
+                                Snyk Image - Vulnerability Scan
                             </Typography>
                             <IconButton  edge="end" color="inherit" onClick={() => {props.handleClose()}} aria-label="close">
                                 <CloseIcon/>
@@ -50,7 +50,7 @@ export default function Benchmark(props){
                                 disabled={running} 
                                 variant="contained"
                                 onClick={handleStartRun} 
-                                endIcon={running ? <CircularProgress/> : <></>}>Begin Benchmark</Button>
+                                endIcon={running ? <CircularProgress/> : <></>}>Begin Scan</Button>
                             <Button
                                 disabled={output === ""}
                                 variant="contained"
@@ -59,7 +59,7 @@ export default function Benchmark(props){
                             >Download</Button>
                         </Grid>
                         <Grid item>
-                            <div style={{backgroundColor:"#e5e5e5", maxHeight:"75vh" ,overflowY:"scroll", textAlign:"left"}}>
+                            <div style={{backgroundColor:"#e5e5e5", maxHeight:"75vh", maxWidth:"90vw", overflowY:"scroll", textAlign:"left"}}>
                                 <ReactMarkdown>
                                     {output}
                                 </ReactMarkdown>
