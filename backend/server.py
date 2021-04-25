@@ -12,6 +12,12 @@ import inspect
 import pprint
 import json
 from containerprocedures import ContainerProcedures
+import os
+runMode = os.getenv("METAPOD_MODE","dev")
+mongoHost="localhost"
+if (runMode == "production"):
+    mongoHost="mongo-internal"
+print(f"Detecting Mode as {runMode}, setting mongo host as {mongoHost}")
 
 app = Flask(__name__)
 api = Api(app)
@@ -30,7 +36,7 @@ containerRuleMap = {
 
 def initializeCore():
     print("[INFO] "+"Verifying Database Connectivity")
-    cluster = MongoClient('localhost', 27017)
+    cluster = MongoClient(mongoHost, 27017)
 
     db = cluster["metapod"]
     contCollection = db["containers"]
@@ -135,7 +141,7 @@ def get_necess_data(data, necess_attrs):
 class Register(Resource):
     def post(self):
         # cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
-        cluster = MongoClient('localhost', 27017)
+        cluster = MongoClient(mongoHost, 27017)
 
         db = cluster["metapod"]
         collection = db["users"]
@@ -160,7 +166,7 @@ class Register(Resource):
 class Login(Resource):
     def post(self):
         # cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
-        cluster = MongoClient('localhost', 27017)
+        cluster = MongoClient(mongoHost, 27017)
 
         db = cluster["metapod"]
         collection = db["users"]
@@ -188,7 +194,7 @@ class Containers(Resource):
         #598079914e20   nginx     "/docker-entrypoint.…"   3 hours ago   Exited (0) 3 hours ago             zen_cerf
 
         # cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
-        cluster = MongoClient('localhost', 27017)
+        cluster = MongoClient(mongoHost, 27017)
 
         db = cluster["metapod"]
         contCollection = db["containers"]
@@ -277,7 +283,7 @@ class Images(Resource):
         #ubuntu       latest    f63181f19b2f   2 weeks ago   72.9MB
 
         # cluster = MongoClient("mongodb+srv://admin:admin123@cluster0.ceaix.mongodb.net/metapod?retryWrites=true&w=majority")
-        cluster = MongoClient('localhost', 27017)
+        cluster = MongoClient(mongoHost, 27017)
 
         db = cluster["metapod"]
         imagesCollection = db["images"]
@@ -388,7 +394,7 @@ class AdditionalContainerRules(Resource):
                 result = matchingMapEntry.apply(containerName, args)
 
                 if (result.status == 200):
-                    cluster = MongoClient('localhost', 27017)
+                    cluster = MongoClient(mongoHost, 27017)
                     db = cluster["metapod"]
                     collection = db["containerRules"]
                     currentRules = collection.find_one({'Name': containerName})['AdditionalRules']
@@ -399,7 +405,7 @@ class AdditionalContainerRules(Resource):
         return {}, 200
 
     def get(self, containerName):
-        cluster = MongoClient('localhost', 27017)
+        cluster = MongoClient(mongoHost, 27017)
         db = cluster["metapod"]
         collection = db["containerRules"]
         currentRules = collection.find_one({'Name': containerName})['AdditionalRules']
@@ -427,7 +433,7 @@ def cap_handler(cap):
                 cap_drop = list(set(cont.attrs['HostConfig']['CapDrop']) - {cap})
 
         
-        cluster = MongoClient('localhost', 27017)
+        cluster = MongoClient(mongoHost, 27017)
 
         db = cluster["metapod"]
         collection = db["containerRules"]
@@ -491,7 +497,7 @@ class ImageRules(Resource):
                 result = matchingMapEntry.apply(imageName, args)
 
                 if (result.status == 200):
-                    cluster = MongoClient('localhost', 27017)
+                    cluster = MongoClient(mongoHost, 27017)
                     db = cluster["metapod"]
                     collection = db["imageRules"]
                     currentRules = collection.find_one({'Tag': imageName})['Rules']
@@ -500,7 +506,7 @@ class ImageRules(Resource):
         return {}, 200
     
     def get(self, imageName):
-        cluster = MongoClient('localhost', 27017)
+        cluster = MongoClient(mongoHost, 27017)
         db = cluster["metapod"]
         collection = db["imageRules"]
         currentRules = collection.find_one({'Tag': imageName})['Rules']

@@ -2,6 +2,12 @@ import docker
 from status import Status
 import json
 from pymongo import MongoClient
+import os
+runMode = os.getenv("METAPOD_MODE","dev")
+mongoHost="localhost"
+if (runMode == "production"):
+    mongoHost="mongo-internal"
+print(f"Detecting Mode as {runMode}, setting mongo host as {mongoHost}")
 
 class ContainerProcedures:
     
@@ -49,7 +55,7 @@ class ContainerProcedures:
         restart_policy = cont.attrs["HostConfig"]["RestartPolicy"]
         pids_limit = cont.attrs["HostConfig"]["PidsLimit"]
 
-        cluster = MongoClient('localhost', 27017)
+        cluster = MongoClient(mongoHost, 27017)
 
         db = cluster["metapod"]
         collection = db["rules"]
@@ -104,7 +110,7 @@ class ContainerProcedures:
         security_opt = cont.attrs['HostConfig'].get('SecurityOpt', [])
         restart_policy = cont.attrs["HostConfig"]["RestartPolicy"]
 
-        cluster = MongoClient('localhost', 27017)
+        cluster = MongoClient(mongoHost, 27017)
 
         db = cluster["metapod"]
         collection = db["rules"]

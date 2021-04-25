@@ -1,0 +1,8 @@
+flask_restful
+docker
+pymongo
+configparser
+pathlib
+flask
+flask_bcrypt
+pprintpp

@@ -18,7 +18,20 @@ done
 ## functions
 buildMetapodBase ()
 {
-	docker build -t="metapod/base" -f ./build/Dockerfile .
+	base=$(basename $PWD)
+	if [ "$base" = "build" ]; then
+		cd ..
+	fi
+	docker build -t="metapod/base" -f ./build/base.dockerfile .
+}
+
+buildMetapodProduction ()
+{
+	base=$(basename $PWD)
+	if [ "$base" = "build" ]; then
+		cd ..
+	fi
+	docker build -t="metapod-production" -f ./build/production.dockerfile .
 }
 
 ## Check if Docker exists (on Ubuntu bash)
@@ -58,7 +71,14 @@ then
 		docker rm metapod-dev
 	fi
 	echo "[INFO] Begin container launch."
-	docker run -v $(pwd):/src -v "/var/run/docker.sock:/var/run/docker.sock:rw" -p 6969:3000 -p 4200:4000 --name=metapod-dev metapod/base
+	docker run -v $(pwd):/metapod -v "/var/run/docker.sock:/var/run/docker.sock:rw" -p 6969:3000 -p 4200:4000 --name=metapod-dev metapod/base
 else
-	echo "[ERR] Production mode not supported"
+	echo "[INFO] Production mode"
+	echo "[INFO] Begin production image build"
+	buildMetapodProduction
+	if [ $? -eq 0 ]; then
+		echo "[INFO] Successfully built metapod-production"
+	else
+		echo "[ERROR] Production image build has failed"
+	fi
 fi
