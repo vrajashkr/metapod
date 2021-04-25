@@ -1,9 +1,14 @@
-import { Dialog, Slide, AppBar, Toolbar, Typography, IconButton, CircularProgress, Grid, Button, OutlinedInput } from '@material-ui/core';
+import { Dialog, Slide, AppBar, Toolbar, Typography, IconButton, CircularProgress, Grid, Button, OutlinedInput, Snackbar } from '@material-ui/core';
 import React from 'react';
 import CloseIcon from '@material-ui/icons/Close';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import ReactMarkdown from 'react-markdown';
 import download from 'downloadjs';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
@@ -19,18 +24,41 @@ export default function ImageScan(props){
         fetch("/api/v1/imagescan", {
             method: "get"
         }).then(response => {
-            response.json().then(result => {
-                setOutput("```" + result.message + "```");
+            if (response.status === 200){
+                response.json().then(result => {
+                    setOutput("```" + result.message + "```");
+                    setRunning(false);
+                });
+            }else{
+                handleSnackOpen("An error has occurred!", "error");
                 setRunning(false);
-            })
-        })
+            } 
+        }).catch(error => {
+            console.log(error);
+            setRunning(false);
+            handleSnackOpen("A next-level error has occurred", "error");
+        });
     }
 
     const handleDownload = () => {
         download(output, "image-vuln.txt", "text/plain");
     }
 
+    const [snackOpen, setSnackOpen] = React.useState(false);
+    const [snackMessage, setSnackMessage] = React.useState("");
+    const [snackSeverity, setSnackSeverity] = React.useState("");
+    
+    const handleSnackOpen= (message, severity) => {
+        setSnackMessage(message);
+        setSnackSeverity(severity);
+        setSnackOpen(true);
+        setTimeout(() => {
+            setSnackOpen(false);
+        }, 5000);
+    }
+
     return(
+            <>
             <Dialog fullScreen open={props.open} onClose={props.handleClose} TransitionComponent={Transition}>
                 <div style={{display:"flex"}}>
                     <AppBar className={props.styles.appBar}>
@@ -68,5 +96,11 @@ export default function ImageScan(props){
                     </Grid>
                 </div>
             </Dialog>
+            <Snackbar open={snackOpen} anchorOrigin={{"vertical": "top", "horizontal":"right" }}>
+                <Alert severity={snackSeverity}>
+                    {snackMessage}
+                </Alert>
+            </Snackbar>
+            </>
     );
 }
