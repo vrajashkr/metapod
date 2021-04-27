@@ -19,19 +19,19 @@ done
 buildMetapodBase ()
 {
 	base=$(basename $PWD)
-	if [ "$base" = "build" ]; then
+	if [ "$base" = "production" ]; then
 		cd ..
 	fi
-	docker build -t="metapod/base" -f ./build/base.dockerfile .
+	docker build -t="metapod/base" -f ./production/base.dockerfile .
 }
 
 buildMetapodProduction ()
 {
 	base=$(basename $PWD)
-	if [ "$base" = "build" ]; then
+	if [ "$base" = "production" ]; then
 		cd ..
 	fi
-	docker build -t="metapod-production" -f ./build/production.dockerfile .
+	docker build -t="metapod-production" -f ./production/production.dockerfile .
 }
 
 ## Check if Docker exists (on Ubuntu bash)

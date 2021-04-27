@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_restful import Api, Resource
+from flask_cors import CORS
 from pymongo import MongoClient
 from flask_bcrypt import Bcrypt
 from benchmark import Benchmark
@@ -20,6 +21,7 @@ if (runMode == "production"):
 print(f"Detecting Mode as {runMode}, setting mongo host as {mongoHost}")
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app)
 bcrypt = Bcrypt(app)
 

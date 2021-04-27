@@ -6,3 +6,4 @@ pathlib
 flask
 flask_bcrypt
 pprintpp
+flask_cors
