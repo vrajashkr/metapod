@@ -8,7 +8,10 @@ RUN pip3 install -r /tmp/python-requirements.txt
 
 #Copy source code
 ENV METAPOD_MODE production
-COPY ./ /metapod
+COPY ./backend /metapod/backend
+COPY ./public /metapod/public
+COPY ./src ./metapod/src
+COPY package.json ./metapod/package.json
 
 #Install UI packages
 WORKDIR /metapod
